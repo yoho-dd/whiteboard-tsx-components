@@ -12,7 +12,7 @@ import type {
   WBDagreLayoutOptions,
   StickyNoteFillColor,
 } from '@larksuite/whiteboard-cli/auto-layout-dsl/types';
-import type { ThemeName, ColorGroupName, ConnectorVariant } from './theme.js';
+import type { ThemeName, ColorGroupName, ConnectorVariant, ColorGroup } from './theme.js';
 
 // ─── Children Type ──────────────────────────────────────────────────────────
 
@@ -263,4 +263,207 @@ export interface LabeledRowProps extends FrameBaseProps {
   labelWidth?: number;
   colorGroup?: ColorGroupName;
   children: ComponentChildren;
+}
+
+// ─── DetailCard ────────────────────────────────────────────────────────────
+
+export interface DetailCardEntry {
+  /** Key label (supports markdown) */
+  key: string;
+  /** Value text (supports markdown) */
+  value: string;
+}
+
+export interface DetailCardProps {
+  id: string;
+  /** Header icon name */
+  icon?: string;
+  /** Header icon color override */
+  iconColor?: string;
+  /** Header title (supports markdown) */
+  title: string;
+  /** Header subtitle (supports markdown) */
+  subtitle?: string;
+  /** Key-value entries in body section */
+  entries?: DetailCardEntry[];
+  /** Arbitrary body children (rendered after entries) */
+  children?: ComponentChildren;
+  /** Footer children (badges, metadata) */
+  footer?: ComponentChildren;
+  colorGroup?: ColorGroupName;
+  width?: WBSizeValue;
+  height?: WBSizeValue;
+  fillColor?: string;
+  borderColor?: string;
+  borderWidth?: number;
+  borderRadius?: number;
+}
+
+// ─── Table ─────────────────────────────────────────────────────────────────
+
+/** A table cell: string for text, or any component(s) */
+export type TableCell = string | ComponentChildren;
+
+export interface TableProps {
+  id?: string;
+  /** Column header strings (supports markdown) */
+  headers?: string[];
+  /** 2D array of cells — strings auto-wrap as Text, components placed directly */
+  rows: TableCell[][];
+  /** Column widths: number for fixed px, 'fill' for fill-container */
+  columnWidths?: (number | 'fill')[];
+  /** Text alignment per column (applies to string cells only) */
+  columnAligns?: ('left' | 'center' | 'right')[];
+  /** Enable alternating row background colors */
+  striped?: boolean;
+  colorGroup?: ColorGroupName;
+  width?: WBSizeValue;
+  fillColor?: string;
+  borderColor?: string;
+  borderRadius?: number;
+}
+
+// ─── BulletList ────────────────────────────────────────────────────────────
+
+export interface BulletListItem {
+  /** Item text (supports markdown) */
+  text: string;
+  /** Optional icon name (overrides bullet/number) */
+  icon?: string;
+}
+
+export interface BulletListProps {
+  id?: string;
+  /** List items — strings or objects with text+icon */
+  items: (string | BulletListItem)[];
+  /** Numbered list vs bullet */
+  ordered?: boolean;
+  /** Bullet character override (default: "\u2022") */
+  bullet?: string;
+  /** Starting number for ordered lists */
+  startNumber?: number;
+  colorGroup?: ColorGroupName;
+  /** Gap between items */
+  gap?: number;
+  /** Font size for items */
+  fontSize?: number;
+  width?: WBSizeValue;
+}
+
+// ─── Divider ───────────────────────────────────────────────────────────────
+
+export interface DividerProps {
+  id?: string;
+  /** Horizontal (default) or vertical */
+  direction?: 'horizontal' | 'vertical';
+  /** Line color */
+  color?: string;
+  /** Line thickness in px */
+  thickness?: number;
+  /** Dash style */
+  dash?: 'solid' | 'dashed' | 'dotted';
+  /** Optional centered label text */
+  label?: string;
+  /** Label font size */
+  labelFontSize?: number;
+  colorGroup?: ColorGroupName;
+  width?: WBSizeValue;
+  height?: WBSizeValue;
+}
+
+// ─── Pipeline ──────────────────────────────────────────────────────────────
+
+export interface PipelineStep {
+  id: string;
+  /** Step title (supports markdown) */
+  title: string;
+  /** Step subtitle (supports markdown) */
+  subtitle?: string;
+  /** Icon name */
+  icon?: string;
+  /** Arbitrary content inside the step */
+  children?: ComponentChildren;
+}
+
+export interface PipelineProps {
+  id?: string;
+  /** Pipeline steps */
+  steps: PipelineStep[];
+  /** Flow direction */
+  direction?: 'horizontal' | 'vertical';
+  /** Connector variant between steps */
+  connectorVariant?: ConnectorVariant;
+  /** Gap between steps */
+  gap?: number;
+  colorGroup?: ColorGroupName;
+  width?: WBSizeValue;
+  height?: WBSizeValue;
+}
+
+// ─── Legend ─────────────────────────────────────────────────────────────────
+
+export interface LegendItem {
+  /** Color swatch hex */
+  color: string;
+  /** Label text (supports markdown) */
+  label: string;
+}
+
+export interface LegendProps {
+  id?: string;
+  /** Legend title (supports markdown) */
+  title?: string;
+  /** Legend entries */
+  items: LegendItem[];
+  /** Layout direction for items */
+  direction?: 'horizontal' | 'vertical';
+  colorGroup?: ColorGroupName;
+  width?: WBSizeValue;
+  fillColor?: string;
+  borderColor?: string;
+  borderRadius?: number;
+}
+
+// ─── Figure ────────────────────────────────────────────────────────────────
+
+export interface FigureProps {
+  id?: string;
+  /** Figure number/label, e.g. "Figure 1" or "Fig. 3a" */
+  label?: string;
+  /** Figure title (supports markdown) */
+  title?: string;
+  /** Figure content — any components */
+  children: ComponentChildren;
+  /** Caption text below the figure (supports markdown) */
+  caption?: string;
+  colorGroup?: ColorGroupName;
+  width?: WBSizeValue;
+  fillColor?: string;
+  borderColor?: string;
+  borderWidth?: number;
+  borderRadius?: number;
+  padding?: number | [number, number] | [number, number, number, number];
+}
+
+// ─── Callout ───────────────────────────────────────────────────────────────
+
+export type CalloutVariant = 'info' | 'warning' | 'success' | 'note';
+
+export interface CalloutProps {
+  id?: string;
+  /** Callout variant — determines icon and colorGroup mapping */
+  variant?: CalloutVariant;
+  /** Title (supports markdown) */
+  title?: string;
+  /** Body text (supports markdown) */
+  body?: string;
+  /** Icon override (default derived from variant) */
+  icon?: string;
+  /** Arbitrary children below body */
+  children?: ComponentChildren;
+  colorGroup?: ColorGroupName;
+  width?: WBSizeValue;
+  fillColor?: string;
+  borderColor?: string;
+  borderRadius?: number;
 }

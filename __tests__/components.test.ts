@@ -24,7 +24,10 @@ import {
   Image,
   Icon,
 } from '../src/primitives.js';
-import { Card, IconCard, Badge, Section, LabeledRow } from '../src/composites.js';
+import {
+  Card, IconCard, Badge, Section, LabeledRow,
+  Divider, BulletList, Legend, Callout, DetailCard, Table, Figure, Pipeline,
+} from '../src/composites.js';
 import { setTheme, spacing, typography, borders } from '../src/theme.js';
 
 // ─── Markdown Parser ────────────────────────────────────────────────────────
@@ -572,5 +575,507 @@ describe('Theme switching', () => {
     });
     const connector = doc.nodes.find((n: any) => n.type === 'connector') as any;
     expect(connector.connector.lineColor).toBe('#86EFAC'); // fresh connector color
+  });
+});
+
+// ─── New Composite Components ──────────────────────────────────────────────
+
+describe('Divider', () => {
+  beforeEach(() => setTheme('classic'));
+
+  it('creates a horizontal divider line', () => {
+    const node = Divider({}) as any;
+    expect(node.type).toBe('rect');
+    expect(node.width).toBe('fill-container');
+    expect(node.height).toBe(1);
+    expect(node.borderWidth).toBe(0);
+  });
+
+  it('creates a vertical divider', () => {
+    const node = Divider({ direction: 'vertical' }) as any;
+    expect(node.type).toBe('rect');
+    expect(node.width).toBe(1);
+    expect(node.height).toBe('fill-container');
+  });
+
+  it('creates a labeled divider', () => {
+    const node = Divider({ label: 'OR' }) as any;
+    expect(node.type).toBe('frame');
+    expect(node.layout).toBe('horizontal');
+    expect(node.children).toHaveLength(3); // line, text, line
+    expect(node.children[0].type).toBe('rect');
+    expect(node.children[1].type).toBe('text');
+    expect(node.children[1].text).toBe('OR');
+    expect(node.children[2].type).toBe('rect');
+  });
+
+  it('applies colorGroup color', () => {
+    const node = Divider({ colorGroup: 'blue' }) as any;
+    expect(node.fillColor).toBe('#C2D3EE'); // classic blue softBorder
+  });
+});
+
+describe('BulletList', () => {
+  beforeEach(() => setTheme('classic'));
+
+  it('creates unordered list with bullet markers', () => {
+    const node = BulletList({ items: ['Item A', 'Item B'] }) as any;
+    expect(node.type).toBe('frame');
+    expect(node.layout).toBe('vertical');
+    expect(node.children).toHaveLength(2);
+    // Each item is a horizontal frame: [bullet, text]
+    const item = node.children[0];
+    expect(item.layout).toBe('horizontal');
+    expect(item.children[0].text).toBe('\u2022');
+    expect(item.children[1].text).toBe('Item A');
+  });
+
+  it('creates ordered list with numbers', () => {
+    const node = BulletList({ items: ['First', 'Second'], ordered: true }) as any;
+    expect(node.children[0].children[0].text).toBe('1.');
+    expect(node.children[1].children[0].text).toBe('2.');
+  });
+
+  it('supports custom start number', () => {
+    const node = BulletList({ items: ['A'], ordered: true, startNumber: 5 }) as any;
+    expect(node.children[0].children[0].text).toBe('5.');
+  });
+
+  it('supports icon per item', () => {
+    const node = BulletList({
+      items: [{ text: 'Check this', icon: 'check-circle' }],
+    }) as any;
+    const prefix = node.children[0].children[0];
+    expect(prefix.type).toBe('icon');
+    expect(prefix.name).toBe('check-circle');
+  });
+
+  it('supports markdown in items', () => {
+    const node = BulletList({ items: ['**bold item**'] }) as any;
+    const textNode = node.children[0].children[1];
+    expect(textNode.text).toEqual([{ content: 'bold item', bold: true }]);
+  });
+});
+
+describe('Legend', () => {
+  beforeEach(() => setTheme('classic'));
+
+  it('creates legend with color swatches and labels', () => {
+    const node = Legend({
+      items: [
+        { color: '#FF0000', label: 'Error' },
+        { color: '#00FF00', label: 'Success' },
+      ],
+    }) as any;
+    expect(node.type).toBe('frame');
+    expect(node.layout).toBe('vertical');
+    // Items container (no title)
+    const itemsContainer = node.children[0];
+    expect(itemsContainer.layout).toBe('horizontal');
+    expect(itemsContainer.children).toHaveLength(2);
+    // First item: [rect swatch, text label]
+    const firstItem = itemsContainer.children[0];
+    expect(firstItem.children[0].type).toBe('rect');
+    expect(firstItem.children[0].fillColor).toBe('#FF0000');
+    expect(firstItem.children[0].width).toBe(12);
+    expect(firstItem.children[1].text).toBe('Error');
+  });
+
+  it('renders title when provided', () => {
+    const node = Legend({
+      title: 'Legend',
+      items: [{ color: '#000', label: 'Item' }],
+    }) as any;
+    expect(node.children).toHaveLength(2); // title + items container
+    expect(node.children[0].type).toBe('text');
+    expect(node.children[0].text).toBe('Legend');
+  });
+
+  it('supports vertical item layout', () => {
+    const node = Legend({
+      items: [{ color: '#000', label: 'A' }],
+      direction: 'vertical',
+    }) as any;
+    const itemsContainer = node.children[0];
+    expect(itemsContainer.layout).toBe('vertical');
+  });
+});
+
+describe('Callout', () => {
+  beforeEach(() => setTheme('classic'));
+
+  it('creates info callout with blue colors', () => {
+    const node = Callout({ variant: 'info', title: 'Note', body: 'Some info' }) as any;
+    expect(node.type).toBe('frame');
+    expect(node.layout).toBe('horizontal');
+    expect(node.fillColor).toBe('#F0F4FC'); // classic blue bg
+    expect(node.borderColor).toBe('#5178C6'); // classic blue border
+    // Icon + content container
+    expect(node.children).toHaveLength(2);
+    expect(node.children[0].type).toBe('icon');
+    expect(node.children[0].name).toBe('info-circle');
+    // Content: title + body
+    const content = node.children[1];
+    expect(content.children).toHaveLength(2);
+    expect(content.children[0].text).toBe('Note');
+    expect(content.children[1].text).toBe('Some info');
+  });
+
+  it('creates warning callout with yellow colors', () => {
+    const node = Callout({ variant: 'warning', title: 'Caution' }) as any;
+    expect(node.fillColor).toBe('#FEF1CE'); // classic yellow bg
+    expect(node.children[0].name).toBe('warning-triangle');
+  });
+
+  it('creates success callout with green colors', () => {
+    const node = Callout({ variant: 'success' }) as any;
+    expect(node.fillColor).toBe('#DFF5E5'); // classic green bg
+    expect(node.children[0].name).toBe('check-circle');
+  });
+
+  it('creates note callout with purple colors', () => {
+    const node = Callout({ variant: 'note' }) as any;
+    expect(node.fillColor).toBe('#EAE2FE'); // classic purple bg
+    expect(node.children[0].name).toBe('edit');
+  });
+
+  it('explicit colorGroup overrides variant', () => {
+    const node = Callout({ variant: 'info', colorGroup: 'red' }) as any;
+    expect(node.fillColor).toBe('#FEE3E2'); // classic red bg, not blue
+  });
+
+  it('renders children in body', () => {
+    const node = Callout({
+      variant: 'info',
+      children: [{ type: 'rect', id: 'r1', width: 100, height: 50 }],
+    }) as any;
+    const content = node.children[1]; // content frame
+    expect(content.children).toHaveLength(1);
+    expect(content.children[0].type).toBe('rect');
+  });
+});
+
+describe('DetailCard', () => {
+  beforeEach(() => setTheme('classic'));
+
+  it('creates card with header and entries', () => {
+    const node = DetailCard({
+      id: 'dc1',
+      title: 'API Endpoint',
+      entries: [
+        { key: 'Method', value: 'GET' },
+        { key: 'Path', value: '/users' },
+      ],
+    }) as any;
+    expect(node.type).toBe('frame');
+    expect(node.layout).toBe('vertical');
+    expect(node.id).toBe('dc1');
+    // Children: title text group, divider, entries container
+    expect(node.children.length).toBeGreaterThanOrEqual(3);
+    // First child is title text
+    expect(node.children[0].type).toBe('text');
+    expect(node.children[0].text).toBe('API Endpoint');
+    // Second child is divider line (rect)
+    expect(node.children[1].type).toBe('rect');
+    expect(node.children[1].height).toBe(1);
+    // Third child is entries container
+    expect(node.children[2].children).toHaveLength(2);
+  });
+
+  it('renders icon in header when provided', () => {
+    const node = DetailCard({
+      id: 'dc2',
+      icon: 'api',
+      title: 'Service',
+    }) as any;
+    // First child should be horizontal header frame with icon + text group
+    const header = node.children[0];
+    expect(header.layout).toBe('horizontal');
+    expect(header.children[0].type).toBe('icon');
+    expect(header.children[0].name).toBe('api');
+  });
+
+  it('renders subtitle', () => {
+    const node = DetailCard({
+      id: 'dc3',
+      icon: 'api',
+      title: 'Title',
+      subtitle: 'Subtitle',
+    }) as any;
+    const header = node.children[0]; // horizontal header
+    const textGroup = header.children[1]; // vertical text frame
+    expect(textGroup.children).toHaveLength(2);
+    expect(textGroup.children[1].text).toBe('Subtitle');
+  });
+
+  it('supports children in body', () => {
+    const child = { type: 'rect', id: 'inner', width: 100, height: 50 };
+    const node = DetailCard({
+      id: 'dc4',
+      title: 'Card',
+      children: [child],
+    }) as any;
+    // Should find the rect among children (after title, divider)
+    const hasRect = node.children.some((c: any) => c.type === 'rect' && c.id === 'inner');
+    expect(hasRect).toBe(true);
+  });
+
+  it('renders footer with divider', () => {
+    const badgeNode = Badge({ text: 'v2' });
+    const node = DetailCard({
+      id: 'dc5',
+      title: 'Card',
+      footer: [badgeNode],
+    }) as any;
+    // Last child should be footer frame
+    const lastChild = node.children[node.children.length - 1];
+    expect(lastChild.layout).toBe('horizontal');
+    // Second to last should be divider
+    const divider = node.children[node.children.length - 2];
+    expect(divider.type).toBe('rect');
+    expect(divider.height).toBe(1);
+  });
+
+  it('applies colorGroup colors', () => {
+    const node = DetailCard({
+      id: 'dc6',
+      title: 'Test',
+      colorGroup: 'green',
+    }) as any;
+    expect(node.fillColor).toBe('#FFFFFF'); // classic green fill
+    expect(node.borderColor).toBe('#C8E6CF'); // classic green softBorder
+  });
+});
+
+describe('Table', () => {
+  beforeEach(() => setTheme('classic'));
+
+  it('creates table with headers and rows', () => {
+    const node = Table({
+      headers: ['Name', 'Value'],
+      rows: [['foo', 'bar'], ['baz', 'qux']],
+    }) as any;
+    expect(node.type).toBe('frame');
+    expect(node.layout).toBe('vertical');
+    expect(node.gap).toBe(0);
+    // 1 header row + 2 data rows
+    expect(node.children).toHaveLength(3);
+    // Header row
+    const headerRow = node.children[0];
+    expect(headerRow.layout).toBe('horizontal');
+    expect(headerRow.children).toHaveLength(2);
+    // First header cell text
+    expect(headerRow.children[0].children[0].text).toBe('Name');
+    // Data row
+    const dataRow = node.children[1];
+    expect(dataRow.children[0].children[0].text).toBe('foo');
+  });
+
+  it('applies alternating row colors when striped', () => {
+    const node = Table({
+      headers: ['A'],
+      rows: [['r0'], ['r1'], ['r2']],
+      striped: true,
+    }) as any;
+    // Row 0 (even) → fill color, Row 1 (odd) → bg color
+    expect(node.children[1].fillColor).toBe('#FFFFFF'); // fill (even row)
+    expect(node.children[2].fillColor).toBe('#F8FAFC'); // bg (odd row, no colorGroup)
+  });
+
+  it('applies colorGroup to table', () => {
+    const node = Table({
+      headers: ['A'],
+      rows: [['x']],
+      colorGroup: 'blue',
+    }) as any;
+    expect(node.borderColor).toBe('#C2D3EE'); // classic blue softBorder
+    // Header row background
+    expect(node.children[0].fillColor).toBe('#F0F4FC'); // classic blue badgeBg
+  });
+
+  it('handles missing headers (no header row)', () => {
+    const node = Table({
+      rows: [['a', 'b']],
+    }) as any;
+    expect(node.children).toHaveLength(1); // only data row
+  });
+
+  it('supports component cells', () => {
+    const badgeNode = Badge({ text: 'OK' });
+    const node = Table({
+      headers: ['Status'],
+      rows: [[badgeNode]],
+    }) as any;
+    const dataRow = node.children[1];
+    const cell = dataRow.children[0];
+    // Cell frame should contain the badge (a frame)
+    expect(cell.children[0].type).toBe('frame'); // Badge is a frame
+    expect(cell.children[0].children[0].text).toBe('OK');
+  });
+});
+
+describe('Figure', () => {
+  beforeEach(() => setTheme('classic'));
+
+  it('creates figure with label, title, content, and caption', () => {
+    const contentNode = { type: 'rect', id: 'content', width: 200, height: 100 };
+    const node = Figure({
+      label: 'Figure 1',
+      title: 'Architecture Overview',
+      children: [contentNode],
+      caption: 'A detailed view of the system.',
+    }) as any;
+    expect(node.type).toBe('frame');
+    expect(node.layout).toBe('vertical');
+    // Header (combined label+title), content, caption
+    expect(node.children).toHaveLength(3);
+    // Header text combines label and title
+    const header = node.children[0];
+    expect(header.type).toBe('text');
+    expect(header.textAlign).toBe('center');
+    // Content
+    expect(node.children[1].type).toBe('rect');
+    expect(node.children[1].id).toBe('content');
+    // Caption
+    expect(node.children[2].type).toBe('text');
+    expect(node.children[2].text).toBe('A detailed view of the system.');
+    expect(node.children[2].textAlign).toBe('center');
+  });
+
+  it('renders children in content area', () => {
+    const node = Figure({
+      children: [
+        { type: 'rect', id: 'a', width: 100, height: 50 },
+        { type: 'rect', id: 'b', width: 100, height: 50 },
+      ],
+    }) as any;
+    expect(node.children).toHaveLength(2);
+  });
+
+  it('applies border and padding', () => {
+    const node = Figure({ children: [] }) as any;
+    expect(node.borderRadius).toBe(12); // partition radius
+    expect(node.padding).toEqual([24, 24]);
+  });
+});
+
+describe('Pipeline', () => {
+  beforeEach(() => setTheme('classic'));
+
+  it('creates horizontal pipeline with step nodes', () => {
+    const node = Pipeline({
+      steps: [
+        { id: 'step1', title: 'Parse' },
+        { id: 'step2', title: 'Validate' },
+        { id: 'step3', title: 'Deploy' },
+      ],
+    }) as any;
+    expect(node.type).toBe('frame');
+    expect(node.layout).toBe('horizontal');
+    // 3 step nodes + 2 connector nodes
+    expect(node.children).toHaveLength(5);
+  });
+
+  it('creates vertical pipeline', () => {
+    const node = Pipeline({
+      direction: 'vertical',
+      steps: [
+        { id: 's1', title: 'A' },
+        { id: 's2', title: 'B' },
+      ],
+    }) as any;
+    expect(node.layout).toBe('vertical');
+  });
+
+  it('auto-generates connector nodes between steps', () => {
+    const node = Pipeline({
+      id: 'pipe',
+      steps: [
+        { id: 'a', title: 'A' },
+        { id: 'b', title: 'B' },
+        { id: 'c', title: 'C' },
+      ],
+    }) as any;
+    const connectors = node.children.filter((c: any) => c.type === 'connector');
+    expect(connectors).toHaveLength(2);
+    expect(connectors[0].connector.from).toBe('a');
+    expect(connectors[0].connector.to).toBe('b');
+    expect(connectors[0].connector.endArrow).toBe('arrow');
+    expect(connectors[1].connector.from).toBe('b');
+    expect(connectors[1].connector.to).toBe('c');
+  });
+
+  it('renders step with icon', () => {
+    const node = Pipeline({
+      steps: [{ id: 's1', title: 'Step', icon: 'rocket' }],
+    }) as any;
+    const stepNode = node.children[0];
+    // Should have a header frame with icon inside
+    const headerFrame = stepNode.children[0];
+    expect(headerFrame.layout).toBe('horizontal');
+    expect(headerFrame.children[0].type).toBe('icon');
+    expect(headerFrame.children[0].name).toBe('rocket');
+  });
+
+  it('renders step children', () => {
+    const child = { type: 'rect', id: 'inner', width: 50, height: 50 };
+    const node = Pipeline({
+      steps: [{ id: 's1', title: 'Step', children: [child] }],
+    }) as any;
+    const stepNode = node.children[0];
+    const hasRect = stepNode.children.some((c: any) => c.type === 'rect' && c.id === 'inner');
+    expect(hasRect).toBe(true);
+  });
+
+  it('applies connector variant', () => {
+    const node = Pipeline({
+      connectorVariant: 'async',
+      steps: [
+        { id: 'a', title: 'A' },
+        { id: 'b', title: 'B' },
+      ],
+    }) as any;
+    const conn = node.children.find((c: any) => c.type === 'connector');
+    expect(conn.connector.lineStyle).toBe('dashed');
+    expect(conn.connector.lineWidth).toBe(1);
+  });
+});
+
+// ─── Nesting / Composability ───────────────────────────────────────────────
+
+describe('Component nesting', () => {
+  beforeEach(() => setTheme('classic'));
+
+  it('DetailCard with BulletList as children', () => {
+    const node = DetailCard({
+      id: 'nested1',
+      title: 'Card',
+      children: [
+        BulletList({ items: ['A', 'B'] }),
+      ],
+    }) as any;
+    // Should find a frame (BulletList) among the card's children
+    const bulletList = node.children.find(
+      (c: any) => c.type === 'frame' && c.layout === 'vertical' && c.children?.length === 2
+        && c.children[0]?.layout === 'horizontal',
+    );
+    expect(bulletList).toBeDefined();
+  });
+
+  it('Figure containing Table', () => {
+    const node = Figure({
+      label: 'Table 1',
+      title: 'Results',
+      children: [
+        Table({
+          headers: ['Metric', 'Value'],
+          rows: [['Accuracy', '95%']],
+        }),
+      ],
+    }) as any;
+    // Second child (after header text) should be the table frame
+    const tableNode = node.children[1];
+    expect(tableNode.type).toBe('frame');
+    expect(tableNode.gap).toBe(0); // Table signature: gap 0
   });
 });

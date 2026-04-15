@@ -150,6 +150,8 @@ export const borders = {
   partition: { width: 2, radius: 12 },
   card: { width: 1, radius: 8 },
   badge: { width: 1, radius: 4 },
+  divider: { width: 1 },
+  table: { width: 1, radius: 6 },
 } as const;
 
 // ─── Icon Sizes ─────────────────────────────────────────────────────────────

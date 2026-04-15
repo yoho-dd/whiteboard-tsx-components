@@ -31,6 +31,12 @@ Step 3 → 渲染并交付
 | 对比表格 | `HStack` + 多个 `VStack`(列) + `Card` |
 | 仪表盘 | `VStack` + `HStack`(行) + `Card` + `Badge` |
 | 泳道图 | `HStack` + 多个 `VStack`(泳道) + `Rect` |
+| 论文配图 | `Figure` 包裹任意内容 + `Legend` + `Callout` 注释 |
+| 数据流水线 | `Pipeline` + 步骤内嵌 `BulletList`/`Table` |
+| API 文档 / UML | `DetailCard`(entries + children) + `Table` + `Badge` |
+| 数据对比表 | `Table`(striped) + `Badge` 组件单元格 |
+| 带注释的架构图 | `Section` + `Card` + `Callout` + `Legend` |
+| 多步骤教程 | `Pipeline`(direction='vertical') + 步骤内嵌丰富内容 |
 
 ### Step 2: 生成代码
 
@@ -280,6 +286,270 @@ Label-Outside 模式，左侧固定宽度标签 + 右侧填满内容。架构图
 
 ---
 
+### 新增复合组件
+
+以下 8 个组件可深度嵌套，每个都是容器，内部可放文本、组件、组合组件甚至子图。
+
+#### `DetailCard({ id, title, icon?, subtitle?, entries?, children?, footer?, colorGroup? })`
+
+多段式富卡片，类似 UML 类图节点：头部（图标+标题）→ 分割线 → 主体（键值对+任意子组件）→ 尾部。
+
+| 参数 | 类型 | 默认值 | 说明 |
+|------|------|--------|------|
+| id | string | — | **必填** |
+| title | string | — | **必填**，支持 markdown |
+| icon | string | — | 头部图标名 |
+| subtitle | string | — | 副标题 |
+| entries | `{ key: string, value: string }[]` | — | 键值对条目 |
+| children | 组件 | — | 主体区域的任意子组件 |
+| footer | 组件 | — | 尾部内容（如 Badge） |
+| colorGroup | ColorGroupName | — | 配色组 |
+| width | WBSizeValue | `'fill-container(200)'` | 宽度 |
+
+生成结构：`frame(vertical)` → header(icon+title) + divider(rect h=1) + entries(key-value rows) + children + footer
+
+```typescript
+DetailCard({
+  id: 'api-spec',
+  icon: 'api',
+  title: '**GET /users**',
+  subtitle: '获取用户列表',
+  entries: [
+    { key: '认证', value: 'Bearer Token' },
+    { key: '限流', value: '100 次/分钟' },
+  ],
+  children: [
+    BulletList({ items: ['支持分页', '可过滤', '可排序'] }),
+  ],
+  footer: [Badge({ text: 'v2.0' }), Badge({ text: '稳定', colorGroup: 'green' })],
+  colorGroup: 'blue',
+})
+```
+
+#### `Table({ headers?, rows, columnWidths?, columnAligns?, striped?, colorGroup? })`
+
+表格网格，单元格支持文本或任意组件。
+
+| 参数 | 类型 | 默认值 | 说明 |
+|------|------|--------|------|
+| headers | `string[]` | — | 列头（支持 markdown） |
+| rows | `(string \| ComponentChildren)[][]` | — | **必填**，二维单元格数组 |
+| columnWidths | `(number \| 'fill')[]` | 全部 `fill` | 列宽 |
+| columnAligns | `('left'\|'center'\|'right')[]` | `'left'` | 列对齐 |
+| striped | boolean | `true` | 隔行变色 |
+| colorGroup | ColorGroupName | — | 配色组 |
+| width | WBSizeValue | `'fill-container'` | 宽度 |
+
+```typescript
+Table({
+  headers: ['参数', '类型', '必填'],
+  rows: [
+    ['page', 'integer', Badge({ text: '否', colorGroup: 'green' })],
+    ['limit', 'integer', Badge({ text: '否', colorGroup: 'green' })],
+    ['role', 'string', Badge({ text: '是', colorGroup: 'red' })],
+  ],
+  striped: true,
+  colorGroup: 'blue',
+})
+```
+
+#### `BulletList({ items, ordered?, bullet?, startNumber?, colorGroup?, gap?, fontSize? })`
+
+内嵌列表，可放入任何容器。
+
+| 参数 | 类型 | 默认值 | 说明 |
+|------|------|--------|------|
+| items | `(string \| { text: string, icon?: string })[]` | — | **必填** |
+| ordered | boolean | `false` | 有序列表 |
+| bullet | string | `"•"` | 无序列表符号 |
+| startNumber | number | `1` | 有序列表起始编号 |
+| gap | number | `4` | 行间距 |
+| fontSize | number | `14` | 字号 |
+| colorGroup | ColorGroupName | — | 配色组 |
+
+```typescript
+BulletList({
+  items: [
+    '支持分页查询',
+    { text: '已通过安全审计', icon: 'check-circle' },
+    '**新增** 批量操作接口',
+  ],
+  ordered: false,
+})
+```
+
+#### `Divider({ direction?, color?, thickness?, label?, colorGroup? })`
+
+分割线，可带居中标签。
+
+| 参数 | 类型 | 默认值 | 说明 |
+|------|------|--------|------|
+| direction | `'horizontal'\|'vertical'` | `'horizontal'` | 方向 |
+| color | string | colorGroup.softBorder | 线色 |
+| thickness | number | `1` | 线粗 |
+| label | string | — | 居中标签文字 |
+| colorGroup | ColorGroupName | — | 配色组 |
+
+```typescript
+Divider({})                                // 简单横线
+Divider({ label: 'OR' })                  // ── OR ──
+Divider({ direction: 'vertical' })        // 竖线
+```
+
+#### `Pipeline({ steps, direction?, connectorVariant?, gap?, colorGroup? })`
+
+流水线：步骤序列 + 自动生成相邻步骤间的 Connector。
+
+| 参数 | 类型 | 默认值 | 说明 |
+|------|------|--------|------|
+| steps | `PipelineStep[]` | — | **必填**，步骤数组 |
+| direction | `'horizontal'\|'vertical'` | `'horizontal'` | 方向 |
+| connectorVariant | ConnectorVariant | `'main'` | 连线变体 |
+| gap | number | `32` | 步骤间距 |
+| colorGroup | ColorGroupName | — | 配色组 |
+
+`PipelineStep`: `{ id: string, title: string, subtitle?: string, icon?: string, children?: ComponentChildren }`
+
+```typescript
+Pipeline({
+  steps: [
+    { id: 'parse', title: '解析', icon: 'code', subtitle: 'AST 生成' },
+    { id: 'validate', title: '校验', icon: 'check-circle' },
+    { id: 'deploy', title: '部署', icon: 'rocket', children: [
+      BulletList({ items: ['灰度发布', '全量上线'] }),
+    ]},
+  ],
+  colorGroup: 'green',
+})
+```
+
+#### `Legend({ items, title?, direction?, colorGroup? })`
+
+图例框：色块 + 标签。
+
+| 参数 | 类型 | 默认值 | 说明 |
+|------|------|--------|------|
+| items | `{ color: string, label: string }[]` | — | **必填** |
+| title | string | — | 图例标题 |
+| direction | `'horizontal'\|'vertical'` | `'horizontal'` | 排列方向 |
+| colorGroup | ColorGroupName | — | 配色组 |
+
+```typescript
+Legend({
+  title: '图例',
+  items: [
+    { color: '#5178C6', label: '主数据流' },
+    { color: '#509863', label: '异步消息' },
+    { color: '#D25D5A', label: '错误路径' },
+  ],
+})
+```
+
+#### `Figure({ label?, title?, children, caption?, colorGroup? })`
+
+学术图表包装器：编号 + 标题 + 内容 + 底部说明文字。
+
+| 参数 | 类型 | 默认值 | 说明 |
+|------|------|--------|------|
+| label | string | — | 编号（如 "Figure 1"） |
+| title | string | — | 标题（支持 markdown） |
+| children | 组件 | — | **必填**，图表内容 |
+| caption | string | — | 底部说明文字 |
+| colorGroup | ColorGroupName | — | 配色组 |
+| width | WBSizeValue | `'fill-container'` | 宽度 |
+| padding | padding | `[24, 24]` | 内边距 |
+
+```typescript
+Figure({
+  label: 'Figure 3',
+  title: '系统架构总览',
+  caption: '展示三层架构设计及数据流向。',
+  children: [
+    // 这里可以放 Section、Pipeline、Table 等任意组件组合
+    VStack({
+      gap: spacing.md,
+      children: [
+        Section({ title: '服务层', colorGroup: 'green', children: [...] }),
+        Section({ title: '数据层', colorGroup: 'purple', children: [...] }),
+      ],
+    }),
+  ],
+})
+```
+
+#### `Callout({ variant?, title?, body?, icon?, children?, colorGroup? })`
+
+标注框，4 种语义变体。
+
+| 参数 | 类型 | 默认值 | 说明 |
+|------|------|--------|------|
+| variant | `'info'\|'warning'\|'success'\|'note'` | `'info'` | 语义变体 |
+| title | string | — | 标题（支持 markdown） |
+| body | string | — | 正文（支持 markdown） |
+| icon | string | — | 图标覆盖（默认由 variant 决定） |
+| children | 组件 | — | 正文下方的任意子组件 |
+| colorGroup | ColorGroupName | — | 覆盖 variant 默认配色 |
+
+**variant 映射：**
+- `info` → 蓝色 + `info-circle` 图标
+- `warning` → 黄色 + `warning-triangle` 图标
+- `success` → 绿色 + `check-circle` 图标
+- `note` → 紫色 + `edit` 图标
+
+```typescript
+Callout({
+  variant: 'warning',
+  title: '注意',
+  body: '此接口将在 v3.0 废弃，请迁移到新版本。',
+  children: [
+    BulletList({ items: ['检查权限配置', '更新客户端 SDK'] }),
+  ],
+})
+```
+
+---
+
+### 组合嵌套示例
+
+所有新组件可深度嵌套，实现论文配图级别的丰富度：
+
+```typescript
+Figure({
+  label: 'Figure 3',
+  title: 'API 端点规格',
+  caption: '用户服务完整的 REST API 规格说明。',
+  children: [
+    DetailCard({
+      id: 'user-api',
+      icon: 'api',
+      title: '**GET /api/users**',
+      subtitle: '获取用户列表',
+      entries: [
+        { key: '认证', value: 'Bearer Token' },
+        { key: '限流', value: '100 次/分钟' },
+      ],
+      children: [
+        BulletList({ items: ['支持分页', '可按角色过滤'] }),
+        Table({
+          headers: ['参数', '类型', '必填'],
+          rows: [
+            ['page', 'integer', Badge({ text: '否', colorGroup: 'green' })],
+            ['role', 'string', Badge({ text: '是', colorGroup: 'red' })],
+          ],
+          striped: true,
+        }),
+      ],
+      footer: [
+        Badge({ text: 'v2.0', colorGroup: 'blue' }),
+        Badge({ text: '稳定', colorGroup: 'green' }),
+      ],
+    }),
+  ],
+})
+```
+
+---
+
 ## Design Tokens
 
 ### 主题 (5 套)
@@ -327,8 +597,10 @@ Label-Outside 模式，左侧固定宽度标签 + 右侧填满内容。架构图
 | Token | width | radius | 用途 |
 |-------|-------|--------|------|
 | `partition` | 2 | 12 | Section 外框 |
-| `card` | 1 | 8 | Card 边框 |
+| `card` | 1 | 8 | Card / DetailCard 边框 |
 | `badge` | 1 | 4 | Badge 圆角 |
+| `divider` | 1 | — | Divider 线粗 |
+| `table` | 1 | 6 | Table 边框 |
 
 ### 图标尺寸 `iconSize`
 
