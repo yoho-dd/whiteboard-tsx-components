@@ -12,5 +12,5 @@
     "isolatedModules": true,
     "forceConsistentCasingInFileNames": true
   },
-  "include": ["src/**/*", "__tests__/**/*", "examples/**/*"]
+  "include": ["src/**/*", "__tests__/**/*", "examples/**/*", "playbook/**/*"]
 }

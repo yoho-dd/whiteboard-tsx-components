@@ -1,5 +1,6 @@
 node_modules/
 dist/
+playbook/dist/
 *.png
 *.json
 !package.json
