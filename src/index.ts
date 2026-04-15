@@ -28,7 +28,10 @@ export {
 
 // ─── Composites ─────────────────────────────────────────────────────────────
 
-export { Card, IconCard, Badge, Section, LabeledRow } from './composites.js';
+export {
+  Card, IconCard, Badge, Section, LabeledRow,
+  Divider, BulletList, Legend, Callout, DetailCard, Table, Figure, Pipeline,
+} from './composites.js';
 
 // ─── Design Tokens ──────────────────────────────────────────────────────────
 
@@ -73,4 +76,18 @@ export type {
   BadgeProps,
   SectionProps,
   LabeledRowProps,
+  DetailCardProps,
+  DetailCardEntry,
+  TableProps,
+  TableCell,
+  BulletListProps,
+  BulletListItem,
+  DividerProps,
+  PipelineProps,
+  PipelineStep,
+  LegendProps,
+  LegendItem,
+  FigureProps,
+  CalloutProps,
+  CalloutVariant,
 } from './types.js';
