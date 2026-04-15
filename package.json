@@ -1,0 +1,28 @@
+{
+  "name": "whiteboard-tsx-components",
+  "version": "0.1.0",
+  "description": "TSX component library for whiteboard-cli — reusable Card, Section, IconCard components with Design Tokens.",
+  "type": "module",
+  "main": "src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./jsx-runtime": "./src/jsx-runtime.ts",
+    "./jsx-dev-runtime": "./src/jsx-dev-runtime.ts"
+  },
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "example": "tsx examples/architecture.ts"
+  },
+  "dependencies": {
+    "@larksuite/whiteboard-cli": "^0.2.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.5.0",
+    "vitest": "^2.0.0",
+    "tsx": "^4.0.0"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
