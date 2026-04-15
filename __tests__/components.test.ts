@@ -530,6 +530,7 @@ describe('LabeledRow', () => {
 
     expect(node.type).toBe('frame');
     expect(node.layout).toBe('horizontal');
+    expect(node.width).toBe('fill-container');
     expect(node.children).toHaveLength(2);
 
     // Label

@@ -367,6 +367,7 @@ export function LabeledRow(props: LabeledRowProps): WBNode {
     colorGroup,
     children,
     gap = spacing.md,
+    width = 'fill-container' as any,
     height = 'fit-content' as any,
     ...rest
   } = props;
@@ -402,6 +403,7 @@ export function LabeledRow(props: LabeledRowProps): WBNode {
     type: 'frame',
     id,
     layout: 'horizontal',
+    width,
     height,
     gap,
     alignItems: 'center',
