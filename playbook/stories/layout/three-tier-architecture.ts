@@ -1,7 +1,7 @@
 import type { PlaybookStory } from '../../types.js';
-import { setTheme, spacing, typography } from '../../../src/theme.js';
+import { setTheme, getTheme, spacing, typography } from '../../../src/theme.js';
 import { Whiteboard, VStack, HStack, Text, Connector } from '../../../src/primitives.js';
-import { Card, Section } from '../../../src/composites.js';
+import { Card, Section, IconCard } from '../../../src/composites.js';
 
 const story: PlaybookStory = {
   id: 'layout-three-tier-architecture',

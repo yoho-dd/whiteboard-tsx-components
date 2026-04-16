@@ -1,5 +1,5 @@
 import type { PlaybookStory } from '../../types.js';
-import { setTheme, spacing } from '../../../src/theme.js';
+import { setTheme, getTheme, spacing, typography } from '../../../src/theme.js';
 import { Whiteboard } from '../../../src/primitives.js';
 import { BulletList, Callout, DetailCard } from '../../../src/composites.js';
 import { SwimlaneTemplate, FlowchartTemplate } from '../../../src/templates.js';

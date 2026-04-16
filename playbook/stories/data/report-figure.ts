@@ -1,5 +1,5 @@
 import type { PlaybookStory } from '../../types.js';
-import { setTheme, spacing, typography } from '../../../src/theme.js';
+import { setTheme, getTheme, spacing, typography } from '../../../src/theme.js';
 import { Whiteboard, VStack, HStack, Text } from '../../../src/primitives.js';
 import { Badge, Figure, Legend, Section, Table } from '../../../src/composites.js';
 
