@@ -1,6 +1,8 @@
 node_modules/
 dist/
 playbook/dist/
+.trae/documents/
+.DS_Store
 *.png
 *.json
 !package.json
