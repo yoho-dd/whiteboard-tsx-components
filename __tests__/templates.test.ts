@@ -152,7 +152,7 @@ describe('Template layer', () => {
     expect(graph.children.map((child: any) => child.id)).toEqual(['draft', 'review', 'release']);
   });
 
-  it('uses intrinsic width for default template nodes', () => {
+  it('uses auto width strategy for template nodes', () => {
     const node = ComparisonTemplate({
       id: 'comparison-template',
       columns: [
@@ -167,7 +167,19 @@ describe('Template layer', () => {
 
     const columns = node.children[0];
     const leftSection = columns.children[0];
-    expect(leftSection.children[1].width).toBe(260);
+    expect(leftSection.children[1].width).toBe('fill-container');
+  });
+
+  it('uses fit-content for dagre-based template nodes (org chart)', () => {
+    const node = OrganizationChartTemplate({
+      id: 'org',
+      nodes: [{ id: 'boss', title: 'Boss' }],
+    }) as any;
+
+    const graph = node.children[0]; // Title is children[0] if exists, else graph
+    // Check if title exists
+    const target = node.children.length > 1 ? node.children[1] : node.children[0];
+    expect(target.children[0].width).toBe('fit-content');
   });
 
   it('rejects shaped template nodes with nested children', () => {

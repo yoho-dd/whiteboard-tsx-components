@@ -80,7 +80,7 @@ whiteboard-cli -i diagram.json -o diagram.png
 4. **Connector 可以写在任意位置，会自动提升到顶层。** 不需要手动放到最外层。
 5. **所有 text/title/subtitle 支持 markdown 增强语法。** `**粗体**`、`*斜体*`、`<color=#HEX>文字</color>`、`<size=N>文字</size>`。
 6. **次要文本自动截断。** 为了防止长文本破坏布局，`subtitle` 和 `entries` 中的文本超过一定长度（60-80字）会自动截断并显示 `...`。
-7. **约束优先。** 模板层节点默认宽度为 `260`，复合组件（Card）默认带 `maxWidth`，优先保证图表比例协调。
+7. **约束优先。** 模板层节点默认使用 `fill-container`（受 `maxWidth` 限制）或 `fit-content` 以保证布局自动平衡，优先保证图表比例协调。
 
 ---
 
