@@ -13,7 +13,7 @@
  *   \n                         → line break (new run)
  */
 
-import type { WBTextRun } from '@larksuite/whiteboard-cli/auto-layout-dsl/types';
+import type { WBTextRun } from './auto-layout-dsl/types.js';
 
 // ─── Detection ──────────────────────────────────────────────────────────────
 

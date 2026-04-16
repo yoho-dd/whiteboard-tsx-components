@@ -12,7 +12,6 @@ import {
   getTheme,
   spacing,
   connectorDefaults,
-  type ConnectorVariant,
 } from './theme.js';
 import type {
   WhiteboardProps,
@@ -34,7 +33,7 @@ import type {
   ImageProps,
   IconProps,
 } from './types.js';
-import type { WBDocument, WBNode } from '@larksuite/whiteboard-cli/auto-layout-dsl/types';
+import type { WBDocument, WBNode } from './auto-layout-dsl/types.js';
 
 // ─── Internal Helpers ───────────────────────────────────────────────────────
 
@@ -92,6 +91,59 @@ function processText(text: string | undefined): string | unknown[] | undefined {
   return parseMarkdownText(text);
 }
 
+function isFillContainerValue(value: unknown): boolean {
+  return typeof value === 'string' && value.startsWith('fill-container');
+}
+
+function isFitContentValue(value: unknown): boolean {
+  return typeof value === 'string' && value.startsWith('fit-content');
+}
+
+function validateNodeTree(nodes: WBNode[]): void {
+  for (const node of nodes) validateNode(node);
+}
+
+function validateNode(node: WBNode): void {
+  if ((node as any).type === 'frame') {
+    const frame = node as any;
+
+    if (frame.layout === 'none') {
+      if (typeof frame.width !== 'number' || typeof frame.height !== 'number') {
+        throw new Error(
+          `Frame${frame.id ? ` "${frame.id}"` : ''} with layout="none" must use numeric width and height.`,
+        );
+      }
+
+      const children = Array.isArray(frame.children) ? frame.children : [];
+      for (const child of children) {
+        if (isFillContainerValue((child as any).width) || isFillContainerValue((child as any).height)) {
+          throw new Error(
+            `Child node${(child as any).id ? ` "${(child as any).id}"` : ''} inside absolute frame${frame.id ? ` "${frame.id}"` : ''} cannot use fill-container sizing.`,
+          );
+        }
+      }
+    }
+
+    if (frame.layout === 'dagre') {
+      if (frame.width !== undefined && !isFitContentValue(frame.width)) {
+        throw new Error(
+          `Dagre frame${frame.id ? ` "${frame.id}"` : ''} must use fit-content width.`,
+        );
+      }
+
+      if (frame.height !== undefined && !isFitContentValue(frame.height)) {
+        throw new Error(
+          `Dagre frame${frame.id ? ` "${frame.id}"` : ''} must use fit-content height.`,
+        );
+      }
+    }
+  }
+
+  if (hasChildren(node) && node.children) {
+    for (const child of node.children as WBNode[]) validateNode(child);
+  }
+}
+
 // ─── Whiteboard (Root Component) ────────────────────────────────────────────
 
 export function Whiteboard(props: WhiteboardProps): WBDocument {
@@ -100,6 +152,7 @@ export function Whiteboard(props: WhiteboardProps): WBDocument {
 
   const nodes = flattenChildren(children);
   const { topLevel, connectors } = liftConnectors(nodes);
+  validateNodeTree(topLevel);
 
   return {
     version: 2,
@@ -164,12 +217,24 @@ export function DagreGraph(props: DagreGraphProps): WBNode {
     isCluster,
     clusterTitle,
     clusterTitleColor,
+    width = 'fit-content',
+    height = 'fit-content',
     ...rest
   } = props;
+
+  if (!isFitContentValue(width)) {
+    throw new Error('DagreGraph only supports fit-content width.');
+  }
+
+  if (!isFitContentValue(height)) {
+    throw new Error('DagreGraph only supports fit-content height.');
+  }
 
   return clean({
     type: 'frame' as const,
     layout: 'dagre' as const,
+    width,
+    height,
     layoutOptions: clean({
       edges,
       rankdir,
@@ -188,10 +253,56 @@ export function DagreGraph(props: DagreGraphProps): WBNode {
 
 // ─── Shape Components ───────────────────────────────────────────────────────
 
-function makeShape(type: string, props: ShapeBaseProps & Record<string, unknown>): WBNode {
-  const { text, ...rest } = props;
+function makeShape<T extends ShapeBaseProps>(type: string, props: T): WBNode {
+  const {
+    id,
+    x,
+    y,
+    width,
+    height,
+    fillColor,
+    borderColor,
+    borderWidth,
+    borderDash,
+    borderRadius,
+    text,
+    fontSize,
+    textColor,
+    textAlign,
+    verticalAlign,
+    opacity,
+    children,
+    contentLayout = 'vertical',
+    contentGap = spacing.sm,
+    contentPadding = spacing.sm,
+    contentAlignItems = 'stretch',
+    contentJustifyContent,
+    ...rest
+  } = props;
+
+  if (children != null) {
+    throw new Error(
+      `${type} nodes no longer support children. Use Frame/Card for nested content and keep shapes as leaf nodes.`,
+    );
+  }
+
   return clean({
     type,
+    id,
+    x,
+    y,
+    width,
+    height,
+    fillColor,
+    borderColor,
+    borderWidth,
+    borderDash,
+    borderRadius,
+    fontSize,
+    textColor,
+    textAlign,
+    verticalAlign,
+    opacity,
     ...rest,
     text: processText(text as string | undefined),
   }) as WBNode;

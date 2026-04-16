@@ -211,6 +211,16 @@ describe('Rect', () => {
     expect(node).toEqual({ type: 'rect', id: 'r1' });
     expect('fillColor' in node).toBe(false);
   });
+
+  it('rejects children because shapes are leaf nodes', () => {
+    expect(() => Rect({
+      id: 'container-rect',
+      width: 240,
+      height: 120,
+      text: 'Container',
+      children: [{ type: 'rect', id: 'inner-rect', width: 40, height: 20 }],
+    })).toThrow(/no longer support children/i);
+  });
 });
 
 describe('Ellipse', () => {
@@ -248,6 +258,60 @@ describe('Trapezoid', () => {
     const node = Trapezoid({ id: 'tp1', width: 100, height: 60, topWidth: 60 }) as any;
     expect(node.type).toBe('trapezoid');
     expect(node.topWidth).toBe(60);
+  });
+});
+
+describe('Layout validation', () => {
+  it('rejects fill-container children inside layout:none', () => {
+    expect(() => Whiteboard({
+      children: [
+        Frame({
+          id: 'abs-root',
+          layout: 'none',
+          width: 300,
+          height: 200,
+          children: [
+            { type: 'rect', id: 'bad-child', width: 'fill-container', height: 40 },
+          ],
+        }),
+      ],
+    })).toThrow(/cannot use fill-container sizing/i);
+  });
+
+  it('rejects non-numeric size on layout:none', () => {
+    expect(() => Whiteboard({
+      children: [
+        Frame({
+          id: 'abs-root',
+          layout: 'none',
+          width: 'fit-content',
+          height: 200,
+          children: [],
+        }),
+      ],
+    })).toThrow(/layout="none" must use numeric width and height/i);
+  });
+
+  it('rejects invalid dagre sizing', () => {
+    expect(() => DagreGraph({
+      id: 'dg-invalid',
+      width: 'fill-container',
+      children: [
+        { type: 'rect', id: 'a', width: 100, height: 50 },
+      ],
+    })).toThrow(/only supports fit-content width/i);
+  });
+
+  it('defaults dagre graphs to fit-content sizing', () => {
+    const node = DagreGraph({
+      id: 'dg-fit',
+      children: [
+        { type: 'rect', id: 'a', width: 100, height: 50 },
+      ],
+    }) as any;
+
+    expect(node.width).toBe('fit-content');
+    expect(node.height).toBe('fit-content');
   });
 });
 
@@ -303,6 +367,8 @@ describe('DagreGraph', () => {
 
     expect(node.type).toBe('frame');
     expect(node.layout).toBe('dagre');
+    expect(node.width).toBe('fit-content');
+    expect(node.height).toBe('fit-content');
     expect(node.layoutOptions.edges).toEqual([['a', 'b', 'flow']]);
     expect(node.layoutOptions.rankdir).toBe('LR');
     expect(node.layoutOptions.nodesep).toBe(80);
@@ -465,6 +531,20 @@ describe('IconCard', () => {
     }) as any;
 
     expect(node.layout).toBe('vertical');
+  });
+
+  it('renders nested children in the text content area', () => {
+    const node = IconCard({
+      id: 'ic2',
+      icon: 'shield',
+      title: 'Auth',
+      children: [Badge({ text: 'Nested' })],
+    }) as any;
+
+    const textContainer = node.children[1];
+    const badge = textContainer.children.find((child: any) => child.type === 'frame' && child.borderRadius === borders.badge.radius);
+    expect(badge).toBeDefined();
+    expect(badge.children[0].text).toBe('Nested');
   });
 });
 

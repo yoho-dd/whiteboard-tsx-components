@@ -42,7 +42,7 @@ import type {
   CalloutVariant,
   ComponentChildren,
 } from './types.js';
-import type { WBNode, WBChild } from '@larksuite/whiteboard-cli/auto-layout-dsl/types';
+import type { WBNode, WBChild } from './auto-layout-dsl/types.js';
 
 // ─── Internal Helpers ───────────────────────────────────────────────────────
 
@@ -164,6 +164,7 @@ export function IconCard(props: IconCardProps): WBNode {
     borderColor,
     borderWidth,
     borderRadius,
+    children,
   } = props;
 
   const theme = getTheme();
@@ -200,6 +201,10 @@ export function IconCard(props: IconCardProps): WBNode {
       fontSize: typography.sub.fontSize,
       textColor: theme.text.secondary,
     }) as WBChild);
+  }
+
+  if (children) {
+    textChildren.push(...flattenChildren(children));
   }
 
   const textContainer = clean({

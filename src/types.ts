@@ -11,7 +11,7 @@ import type {
   WBArrowType,
   WBDagreLayoutOptions,
   StickyNoteFillColor,
-} from '@larksuite/whiteboard-cli/auto-layout-dsl/types';
+} from './auto-layout-dsl/types.js';
 import type { ThemeName, ColorGroupName, ConnectorVariant, ColorGroup } from './theme.js';
 
 // ─── Children Type ──────────────────────────────────────────────────────────
@@ -94,6 +94,18 @@ export interface ShapeBaseProps {
   textAlign?: 'left' | 'center' | 'right';
   verticalAlign?: 'top' | 'middle' | 'bottom';
   opacity?: number;
+  /** @deprecated Shapes are leaf nodes. Use Frame/Card for nested content. */
+  children?: ComponentChildren;
+  /** @deprecated Shapes are leaf nodes. Use Frame/Card for nested content. */
+  contentLayout?: 'horizontal' | 'vertical';
+  /** @deprecated Shapes are leaf nodes. Use Frame/Card for nested content. */
+  contentGap?: number;
+  /** @deprecated Shapes are leaf nodes. Use Frame/Card for nested content. */
+  contentPadding?: number | [number, number] | [number, number, number, number];
+  /** @deprecated Shapes are leaf nodes. Use Frame/Card for nested content. */
+  contentAlignItems?: 'start' | 'center' | 'end' | 'stretch';
+  /** @deprecated Shapes are leaf nodes. Use Frame/Card for nested content. */
+  contentJustifyContent?: 'start' | 'center' | 'end' | 'space-between' | 'space-around';
 }
 
 export interface RectProps extends ShapeBaseProps {}
@@ -234,6 +246,8 @@ export interface IconCardProps {
   borderColor?: string;
   borderWidth?: number;
   borderRadius?: number;
+  /** Optional nested content rendered below the title area */
+  children?: ComponentChildren;
 }
 
 export interface BadgeProps {
@@ -466,4 +480,122 @@ export interface CalloutProps {
   fillColor?: string;
   borderColor?: string;
   borderRadius?: number;
+}
+
+// ─── Template Layer ────────────────────────────────────────────────────────
+
+export type TemplateShapeType =
+  | 'rect'
+  | 'ellipse'
+  | 'diamond'
+  | 'triangle'
+  | 'cylinder'
+  | 'trapezoid';
+
+export interface TemplateShapeSpec extends Omit<ShapeBaseProps, 'children'> {
+  /** Shape shell used to wrap nested content */
+  type?: TemplateShapeType;
+}
+
+export interface TemplateNodeBase {
+  id: string;
+  title?: string;
+  subtitle?: string;
+  colorGroup?: ColorGroupName;
+  width?: WBSizeValue;
+  height?: WBSizeValue;
+  /** Pre-rendered component body used directly as the node shell */
+  component?: ComponentChildren;
+  /** Extra nested content rendered inside the chosen shell */
+  children?: ComponentChildren;
+  /** Optional shape shell for the node */
+  shape?: TemplateShapeType | TemplateShapeSpec;
+}
+
+export interface ArchitectureTemplateNode extends TemplateNodeBase {}
+
+export interface ArchitectureTemplateLayer {
+  id?: string;
+  title: string;
+  label?: string;
+  colorGroup?: ColorGroupName;
+  direction?: 'horizontal' | 'vertical';
+  nodes: ArchitectureTemplateNode[];
+}
+
+export interface ArchitectureTemplateProps {
+  id?: string;
+  title?: string;
+  width?: WBSizeValue;
+  gap?: number;
+  padding?: number | [number, number] | [number, number, number, number];
+  fillColor?: string;
+  layers: ArchitectureTemplateLayer[];
+}
+
+export interface OrganizationChartNode extends TemplateNodeBase {
+  childrenNodes?: OrganizationChartNode[];
+}
+
+export interface OrganizationChartTemplateProps {
+  id?: string;
+  title?: string;
+  width?: WBSizeValue;
+  gap?: number;
+  padding?: number | [number, number] | [number, number, number, number];
+  fillColor?: string;
+  nodes: OrganizationChartNode[];
+}
+
+export interface SwimlaneTemplateStep extends TemplateNodeBase {}
+
+export interface SwimlaneTemplateLane {
+  id: string;
+  title: string;
+  colorGroup?: ColorGroupName;
+  direction?: 'vertical' | 'horizontal';
+  steps: SwimlaneTemplateStep[];
+}
+
+export interface SwimlaneTemplateProps {
+  id?: string;
+  title?: string;
+  width?: WBSizeValue;
+  gap?: number;
+  padding?: number | [number, number] | [number, number, number, number];
+  fillColor?: string;
+  lanes: SwimlaneTemplateLane[];
+  connectors?: ConnectorProps[];
+}
+
+export interface ComparisonTemplateColumn extends TemplateNodeBase {
+  items?: ComponentChildren;
+}
+
+export interface ComparisonTemplateProps {
+  id?: string;
+  title?: string;
+  width?: WBSizeValue;
+  gap?: number;
+  padding?: number | [number, number] | [number, number, number, number];
+  fillColor?: string;
+  columns: ComparisonTemplateColumn[];
+}
+
+export interface FlowchartTemplateNode extends TemplateNodeBase {}
+
+export interface FlowchartTemplateProps {
+  id?: string;
+  title?: string;
+  width?: WBSizeValue;
+  gap?: number;
+  padding?: number | [number, number] | [number, number, number, number];
+  fillColor?: string;
+  nodes: FlowchartTemplateNode[];
+  edges: WBDagreLayoutOptions['edges'];
+  rankdir?: 'TB' | 'BT' | 'LR' | 'RL';
+  align?: 'UL' | 'UR' | 'DL' | 'DR';
+  nodesep?: number;
+  edgesep?: number;
+  ranksep?: number;
 }

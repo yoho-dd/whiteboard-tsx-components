@@ -33,6 +33,16 @@ export {
   Divider, BulletList, Legend, Callout, DetailCard, Table, Figure, Pipeline,
 } from './composites.js';
 
+// ─── Templates ──────────────────────────────────────────────────────────────
+
+export {
+  ArchitectureTemplate,
+  OrganizationChartTemplate,
+  SwimlaneTemplate,
+  ComparisonTemplate,
+  FlowchartTemplate,
+} from './templates.js';
+
 // ─── Design Tokens ──────────────────────────────────────────────────────────
 
 export {
@@ -90,4 +100,19 @@ export type {
   FigureProps,
   CalloutProps,
   CalloutVariant,
+  TemplateShapeType,
+  TemplateShapeSpec,
+  TemplateNodeBase,
+  ArchitectureTemplateNode,
+  ArchitectureTemplateLayer,
+  ArchitectureTemplateProps,
+  OrganizationChartNode,
+  OrganizationChartTemplateProps,
+  SwimlaneTemplateStep,
+  SwimlaneTemplateLane,
+  SwimlaneTemplateProps,
+  ComparisonTemplateColumn,
+  ComparisonTemplateProps,
+  FlowchartTemplateNode,
+  FlowchartTemplateProps,
 } from './types.js';

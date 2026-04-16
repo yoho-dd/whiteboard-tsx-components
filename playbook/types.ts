@@ -1,4 +1,4 @@
-import type { WBDocument } from '@larksuite/whiteboard-cli/auto-layout-dsl/types';
+import type { WBDocument } from '../src/auto-layout-dsl/types.js';
 
 export type MaybePromise<T> = T | Promise<T>;
 
