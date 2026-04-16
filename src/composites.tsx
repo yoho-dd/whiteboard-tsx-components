@@ -1386,7 +1386,9 @@ export function Pipeline(props: PipelineProps): WBNode {
       connector: clean({
         from: steps[i].id,
         to: steps[i + 1].id,
-        lineShape,
+        fromAnchor: isHorizontal ? 'right' : 'bottom',
+        toAnchor: isHorizontal ? 'left' : 'top',
+        lineShape: lineShape ?? 'straight',
         lineColor: theme.connector.color,
         lineWidth: defaults.lineWidth,
         lineStyle: defaults.lineStyle,

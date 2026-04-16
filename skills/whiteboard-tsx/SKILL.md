@@ -72,20 +72,101 @@ whiteboard-cli -i diagram.json -o diagram.png
 
 ---
 
+## 🎨 高级画图引导：如何画出专业、丰富、不单调的学术级配图
+
+在处理复杂系统、学术论文配图、高质量技术方案评审时，请**务必**遵循以下原则，避免画出全是干瘪 `Rect` 的单调网格图：
+
+1. **建立丰富的层次感 (Hierarchy)**
+   - **外壳包装**：用 `Figure({ label: 'Figure 1', title: '...', caption: '...' })` 作为整个图表的外层，这能瞬间提升学术感和专业度。
+   - **骨架搭建**：**强烈推荐首选 `ArchitectureTemplate`、`FlowchartTemplate` 等高级模板**（见下方模板章节）搭建图表骨架，自动处理内外边距、标题和排版，绝不手写繁琐的 `VStack/HStack` 嵌套。
+   - **摒弃裸块**：尽量不要把纯文本或干瘪的 `Rect` 作为叶子节点！使用 `DetailCard` (包含图标、键值对、复杂嵌套) 或 `IconCard` 代替，让每个节点“丰满”起来。
+
+2. **提高信息密度 (Density)**
+   - 当节点包含内部逻辑、字段说明或子步骤时，不要只写个名字。利用 `DetailCard` 的 `entries` 属性展示元数据，在其 `children` 中嵌套 `Table` 或 `BulletList`。
+   - 例如：一个 API 网关节点，不要只画个框写 "API Gateway"。用 `DetailCard` 并内置 `Table` 展示路由规则，用 `Badge` 标注 "QPS 10w"。
+
+3. **重点突出与引导 (Emphasis & Flow)**
+   - **核心标注**：对于图中的关键突破点或需要用户特别关注的地方，在旁边放一个 `Callout({ variant: 'warning', body: '核心创新点...' })` 并用 `Connector` 虚线指向目标节点。
+   - **线型语义**：不要全图都是一样的连线。主数据流用粗实线 (`variant: 'main'`)，次要分支用细实线 (`secondary`)，异步/事件用虚线 (`async`)，弱依赖用点线 (`weak`)。
+   - **图例说明**：如果图中使用了不同的颜色或线型代表不同语义，必须在图表角落（如 `Figure` 内部的顶部或底部）放置一个 `Legend`。
+
+4. **拒绝单调，制造节奏感 (Rhythm)**
+   - 不要全图铺满同一种大小的卡片。**中心节点/核心组件**可以是一个包含内部结构的大号 `DetailCard`，**周边附属组件**则用紧凑的 `IconCard(direction: 'horizontal')`。
+   - 利用 `Divider` 在卡片内部进行信息分隔。
+   - 优先选用 `minimalist` (极简，高对比度，黑白灰为主) 或 `business` (沉稳) 主题，配合精心挑选的 `icon`，更贴近国际顶会的论文配图风格。
+
+5. **SVG 矢量增强与自定义图标**
+   - 当内置图标库不足以表达业务含义时，使用 `Svg({ code: '...' })` 嵌入自定义矢量图形。
+   - **严格约束**：SVG 代码内**禁止**出现 `<text>`、`<image>`、`<foreignObject>` 标签，严禁引用外部 URL（如 `href="http..."`）。仅允许纯路径 (`path`)、几何图形 (`rect/circle`)、渐变 (`linearGradient`) 等。
+   - **场景**：绘制业务专属 LOGO、复杂的背景装饰模式、或特殊的数学符号。
+
+6. **复杂连线与路径控制 (Advanced Routing)**
+   - **平滑曲线**：使用 `lineShape: 'curve'` 创造流体感的连线，适合表达“演进”、“生命周期”或“非线性关联”。
+   - **精确避障**：当自动布线导致线条穿过节点时，使用 `waypoints: [{x, y}, ...]` 显式指定折返点，强制线条绕行。
+   - **语义线型**：通过 `lineStyle: 'dashed' | 'dotted'` 区分物理链路与逻辑链路。
+
+7. **形状原语的语义化选择**
+   - 不要只用 `Rect`。根据领域惯例选择形状：
+     - `Cylinder`：数据库、持久化存储。
+     - `Diamond`：流程决策点、网关逻辑、冲突检测。
+     - `Trapezoid` / `Triangle`：手动操作、数据汇聚、警告标注。
+   - **注意**：形状原语是**叶子节点**，不能包含 `children`。需要容器时请使用 `Frame` 或 `Card`。
+
+8. **组合创造：打造个性化背景与装饰**
+   - **形状背景**：通过 `Frame({ layout: 'none' })` 固定宽高，内部第一个子节点放 `Svg` 或 `Rect` 作为背景，后续子节点通过 `x, y` 坐标定位实现复杂的视觉叠加。
+   - **状态指示灯**：在卡片右上角通过绝对定位 (`layout: 'none'`) 放置一个小的 `Ellipse` 来模拟在线/离线状态。
+
+---
+
 ## 致命约束（违反必出 bug）
 
 1. **必须先 `setTheme()` 再构建组件树。** 函数调用是立即求值的，`Whiteboard({ theme })` 内部的 `setTheme` 在子组件之后执行。
 2. **宽度链必须完整。** 根容器必须有固定 `width`（如 1200），中间容器用 `fill-container`，否则子节点宽度为 0，文字变成竖排。
 3. **Connector 的 from/to 必须是已存在的 id。** 每个需要被连线引用的节点必须设置 `id`。
 4. **Connector 可以写在任意位置，会自动提升到顶层。** 不需要手动放到最外层。
-5. **连线美观性约束。** 为了避免连线像蜘蛛网一样乱穿组件，对于跨层级或远距离连线，**必须显式指定** `lineShape: 'rightAngle' | 'curve'` 和出入锚点（`fromAnchor`, `toAnchor`）。默认的直线和中心锚点通常很难看。
-6. **所有 text/title/subtitle 支持 markdown 增强语法。** `**粗体**`、`*斜体*`、`<color=#HEX>文字</color>`、`<size=N>文字</size>`。
+5. **连线美观性约束。** 为了避免连线像蜘蛛网一样乱穿组件，请遵循以下**锚点与形状匹配模式**：
+   - **垂直流 (自上而下)**：`fromAnchor: 'bottom'`, `toAnchor: 'top'`, `lineShape: 'rightAngle'`。
+   - **水平流 (自左向右)**：`fromAnchor: 'right'`, `toAnchor: 'left'`, `lineShape: 'rightAngle'`。
+   - **旁注标注 (Callout)**：通常使用 `lineShape: 'curve'`，锚点根据位置选择（如 Callout 在右侧，则 `fromAnchor: 'left'`, `toAnchor: 'right'`）。
+   - **禁止行为**：禁止在非必要情况下使用默认的直线连接，那会穿透卡片。
+6. **所有 text/title/subtitle 支持 markdown 增强语法。** `**粗体**`、`*italic*`、`<color=#HEX>文字</color>`、`<size=N>文字</size>`。
 7. **次要文本自动截断。** 为了防止长文本破坏布局，`subtitle` 和 `entries` 中的文本超过一定长度（60-80字）会自动截断并显示 `...`。
 8. **约束优先。** 模板层节点默认使用 `fill-container`（受 `maxWidth` 限制）或 `fit-content` 以保证布局自动平衡，优先保证图表比例协调。
 
 ---
 
 ## 组件 API
+
+### 模板组件 (Templates) - 强烈推荐
+
+为保证图表结构的稳固性、专业性和代码简洁度，**强烈建议首选**以下 5 个高级模板组件，而非从零用 `VStack/HStack` 拼装。它们内部自动处理了排版、标题、内外边距。
+
+#### `ArchitectureTemplate({ title?, layers, ... })`
+分层架构图专用。自动处理“左侧标签 + 右侧内容”的经典布局。
+- `layers`: `{ id?: string, title: string, label?: string, colorGroup?: string, direction?: 'horizontal'|'vertical', nodes: TemplateNode[] }[]`
+- `TemplateNode`: `{ id: string, title?: string, subtitle?: string, colorGroup?: string, component?: ComponentChildren, children?: ComponentChildren }` 
+  *(注：如果需要复杂的节点如 `DetailCard`，请将渲染好的组件传入 `component` 字段)*
+
+#### `FlowchartTemplate({ title?, nodes, edges, rankdir?, ... })`
+基于 Dagre 的流程图模板。自带外壳和统一的节点渲染逻辑。
+- `nodes`: `TemplateNode[]` (定义同上)
+- `edges`: `[from, to][]` 或 `[from, to, label][]` (同 DagreGraph edges)
+- `rankdir`: `'TB'|'BT'|'LR'|'RL'` (默认 `'TB'`)
+
+#### `SwimlaneTemplate({ title?, lanes, connectors?, ... })`
+泳道图。
+- `lanes`: `{ id: string, title: string, colorGroup?: string, direction?: 'horizontal'|'vertical', steps: TemplateNode[] }[]`
+- `connectors`: `ConnectorProps[]` (用于跨泳道连线)
+
+#### `ComparisonTemplate({ title?, columns, ... })`
+对比图 / 多列对比。
+- `columns`: `{ id: string, title?: string, colorGroup?: string, items?: ComponentChildren }[]`
+
+#### `OrganizationChartTemplate({ title?, nodes, ... })`
+组织架构图（树状自动布局）。
+- `nodes`: `{ id: string, title?: string, subtitle?: string, childrenNodes?: Node[] }[]`
+
+---
 
 ### 根组件
 
@@ -402,15 +483,16 @@ Divider({ label: 'OR' })                  // ── OR ──
 Divider({ direction: 'vertical' })        // 竖线
 ```
 
-#### `Pipeline({ steps, direction?, connectorVariant?, gap?, colorGroup? })`
+#### `Pipeline({ steps, direction?, connectorVariant?, lineShape?, gap?, colorGroup? })`
 
-流水线：步骤序列 + 自动生成相邻步骤间的 Connector。
+流水线：步骤序列 + 自动生成相邻步骤间的 Connector。已内置智能锚点定位（水平流用 right→left，垂直流用 bottom→top），默认使用直线连接且不会穿透卡片。
 
 | 参数 | 类型 | 默认值 | 说明 |
 |------|------|--------|------|
 | steps | `PipelineStep[]` | — | **必填**，步骤数组 |
 | direction | `'horizontal'\|'vertical'` | `'horizontal'` | 方向 |
 | connectorVariant | ConnectorVariant | `'main'` | 连线变体 |
+| lineShape | `'straight'\|'curve'\|'rightAngle'\|'polyline'` | `'straight'` | 连线形状 |
 | gap | number | `32` | 步骤间距 |
 | colorGroup | ColorGroupName | — | 配色组 |
 
@@ -627,98 +709,153 @@ Figure({
 
 ---
 
-## 完整示例：分层架构图
+## 完整示例：学术论文级复杂架构图（高信息密度）
 
 ```typescript
-import { setTheme } from '../src/theme.js';
-import { Whiteboard, VStack, HStack, Text, Connector } from '../src/primitives.js';
-import { Card, IconCard, Section, Badge } from '../src/composites.js';
-import { spacing, typography } from '../src/theme.js';
+import { setTheme, spacing } from '../src/theme.js';
+import { Whiteboard, HStack, Connector } from '../src/primitives.js';
+import { Badge, DetailCard, Table, BulletList, Legend, Figure, Callout } from '../src/composites.js';
+import { ArchitectureTemplate } from '../src/templates.js';
 
-// ❶ 先设主题
-setTheme('classic');
+// ❶ 使用贴近学术论文的极简主题
+setTheme('minimalist');
 
 const doc = Whiteboard({
-  theme: 'classic',
+  theme: 'minimalist',
   children: [
-    VStack({
-      id: 'root',
-      width: 1200,           // ← 根容器必须固定宽度
-      gap: spacing.lg,       // 24
-      padding: spacing.xl,   // 32
-      fillColor: '#F8FAFC',
+    Figure({
+      label: 'Figure 1',
+      title: '分布式流处理架构与高可用设计',
+      caption: '展示了系统如何通过双链路实现低延迟与高吞吐的平衡。图中粗实线为主数据流，虚线为异步补偿流。',
       children: [
-        // 标题
-        Text({
-          id: 'title',
-          text: 'System Architecture',
-          fontSize: typography.h1.fontSize,
-          textColor: '#1F2329',
-          width: 'fit-content',
-          height: 'fit-content',
+        HStack({
+          gap: spacing.lg,
+          alignItems: 'start',
+          children: [
+            // 左侧：图例说明
+            Legend({
+              title: '链路说明',
+              direction: 'vertical',
+              items: [
+                { color: '#212529', label: '主控链路 (强一致)' },
+                { color: '#868E96', label: '计算链路 (最终一致)' }
+              ]
+            }),
+            // 顶部：核心突破点标注
+            Callout({
+              id: 'innovation-note',
+              variant: 'note',
+              title: '创新点：自适应背压机制',
+              body: '在接入层与计算层之间引入了基于队列深度的**动态限流算法**，有效防止雪崩。',
+            })
+          ]
         }),
 
-        // 接入层（蓝色）
-        Section({
-          id: 'access',
-          title: 'Access Layer',
-          colorGroup: 'blue',
-          children: [
-            HStack({
-              gap: spacing.md,
-              alignItems: 'stretch',
-              children: [
-                IconCard({ id: 'nginx', icon: 'cloud-server', title: '**Nginx**', subtitle: 'Load Balancer' }),
-                IconCard({ id: 'api', icon: 'api', title: '**API Gateway**', subtitle: 'REST + GraphQL' }),
-              ],
-            }),
-          ],
-        }),
-
-        // 服务层（绿色）
-        Section({
-          id: 'services',
-          title: 'Service Layer',
-          colorGroup: 'green',
-          children: [
-            HStack({
-              gap: spacing.md,
-              alignItems: 'stretch',
-              children: [
-                Card({ id: 'user-svc', title: 'User Service', subtitle: 'Authentication' }),
-                Card({ id: 'order-svc', title: 'Order Service', subtitle: 'CQRS Pattern' }),
-                Card({ id: 'pay-svc', title: 'Payment', subtitle: 'Stripe Integration' }),
-              ],
-            }),
-          ],
-        }),
-
-        // 数据层（紫色）
-        Section({
-          id: 'data',
-          title: 'Data Layer',
-          colorGroup: 'purple',
-          children: [
-            HStack({
-              gap: spacing.md,
-              children: [
-                Card({ id: 'pg', title: 'PostgreSQL', subtitle: 'Primary DB' }),
-                Card({ id: 'redis', title: 'Redis', subtitle: 'Cache Layer' }),
-              ],
-            }),
-          ],
-        }),
-      ],
+        // 使用 ArchitectureTemplate 快速构建分层，取代繁琐的 VStack 嵌套
+        ArchitectureTemplate({
+          id: 'main-arch',
+          width: 'fill-container',
+          layers: [
+            {
+              id: 'layer-access',
+              title: '接入层 (Access)',
+              label: 'L4 / L7',
+              colorGroup: 'blue',
+              nodes: [
+                {
+                  id: 'gateway',
+                  component: DetailCard({
+                    id: 'gateway-card',
+                    icon: 'globe',
+                    title: '**智能 API 网关**',
+                    subtitle: '基于 Envoy 的云原生网关',
+                    entries: [
+                      { key: '吞吐量', value: '100k QPS' },
+                      { key: '协议', value: 'gRPC / HTTP3' }
+                    ],
+                    children: [
+                      BulletList({
+                        items: [
+                          '全局限流与认证',
+                          { text: 'SSL 卸载', icon: 'lock' }
+                        ]
+                      })
+                    ],
+                    footer: [Badge({ text: 'v3.2', colorGroup: 'green' })]
+                  })
+                }
+              ]
+            },
+            {
+              id: 'layer-compute',
+              title: '计算层 (Compute)',
+              label: 'Stream / Batch',
+              colorGroup: 'purple',
+              direction: 'horizontal',
+              nodes: [
+                {
+                  id: 'stream-engine',
+                  component: DetailCard({
+                    id: 'stream-card',
+                    icon: 'zap',
+                    title: '**实时流引擎**',
+                    children: [
+                      Table({
+                        headers: ['算子', '延迟', '状态'],
+                        rows: [
+                          ['Window', '< 5ms', Badge({ text: '活跃', colorGroup: 'green' })],
+                          ['Join', '< 10ms', Badge({ text: '活跃', colorGroup: 'green' })]
+                        ],
+                        striped: true
+                      })
+                    ]
+                  })
+                },
+                {
+                  id: 'batch-engine',
+                  component: DetailCard({
+                    id: 'batch-card',
+                    icon: 'server',
+                    title: '**离线批处理**',
+                    children: [
+                      BulletList({ items: ['每日全量对账', 'T+1 报表生成'] })
+                    ]
+                  })
+                }
+              ]
+            }
+          ]
+        })
+      ]
     }),
 
-    // 连线
-    Connector({ id: 'c1', from: 'nginx', to: 'api', variant: 'main' }),
-    Connector({ id: 'c2', from: 'api', to: 'user-svc' }),
-    Connector({ id: 'c3', from: 'api', to: 'order-svc' }),
-    Connector({ id: 'c4', from: 'api', to: 'pay-svc' }),
-    Connector({ id: 'c5', from: 'user-svc', to: 'pg', variant: 'main' }),
-    Connector({ id: 'c6', from: 'order-svc', to: 'redis', variant: 'async', label: 'cache' }),
-  ],
+    // 连线：不同粗细、虚实代表不同语义，且显式指定锚点以保证布局整洁
+    Connector({ 
+      from: 'gateway-card', 
+      to: 'stream-card', 
+      fromAnchor: 'bottom', 
+      toAnchor: 'top', 
+      variant: 'main', 
+      lineShape: 'rightAngle' 
+    }),
+    Connector({ 
+      from: 'gateway-card', 
+      to: 'batch-card', 
+      fromAnchor: 'bottom', 
+      toAnchor: 'top', 
+      variant: 'secondary', 
+      lineShape: 'rightAngle' 
+    }),
+    Connector({ 
+      from: 'innovation-note', 
+      to: 'gateway-card', 
+      fromAnchor: 'left', 
+      toAnchor: 'right', 
+      variant: 'weak', 
+      lineShape: 'curve',
+      lineStyle: 'dashed' 
+    })
+  ]
 });
 
 console.log(JSON.stringify(doc, null, 2));
