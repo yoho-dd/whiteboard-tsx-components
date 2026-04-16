@@ -10,74 +10,75 @@ const story: PlaybookStory = {
   description: '展示 LabeledRow、Divider 与 Section 的组合，适合做分层说明、模块分组和对齐检查。',
   render: () => {
     setTheme('minimalist');
+    const theme = getTheme();
 
     return Whiteboard({
       theme: 'minimalist',
       children: [
         VStack({
           id: 'root',
-          width: 1180,
-          gap: spacing.lg,
-          padding: spacing.xl,
-          fillColor: '#FAFBFC',
+          width: 1200,
+          gap: spacing.xl,
+          padding: spacing.xxl,
+          fillColor: theme.canvas,
           children: [
             Text({
               id: 'title',
-              text: '平台能力分层',
+              text: '**Platform Capabilities & Layers**',
               fontSize: typography.h1.fontSize,
-              textColor: '#111827',
+              textColor: theme.text.primary,
               width: 'fit-content',
               height: 'fit-content',
             }),
             Section({
               id: 'layout-demo',
-              title: '能力分区',
+              title: 'Functional Segmentation',
               colorGroup: 'blue',
               children: [
                 LabeledRow({
                   id: 'row-access',
-                  label: '接入层',
-                  labelWidth: 96,
+                  label: 'Access',
+                  labelWidth: 100,
                   colorGroup: 'blue',
                   children: [
                     HStack({
-                      gap: spacing.md,
+                      gap: spacing.lg,
                       children: [
-                        Card({ id: 'ingress', title: 'Ingress', subtitle: '域名 / TLS / 灰度' }),
-                        Card({ id: 'gateway', title: 'Gateway', subtitle: '鉴权 / 限流 / 路由' }),
+                        Card({ id: 'ingress', title: '**Ingress**', subtitle: 'TLS / Traffic Routing' }),
+                        Card({ id: 'gateway', title: '**API Gateway**', subtitle: 'Auth / Rate Limiting' }),
                       ],
                     }),
                   ],
                 }),
-                Divider({ label: 'Core Services', colorGroup: 'blue' }),
+                Divider({ label: 'Business Domains', colorGroup: 'blue' }),
                 LabeledRow({
                   id: 'row-core',
-                  label: '核心层',
-                  labelWidth: 96,
+                  label: 'Core',
+                  labelWidth: 100,
                   colorGroup: 'green',
                   children: [
                     HStack({
-                      gap: spacing.md,
+                      gap: spacing.lg,
                       children: [
-                        Card({ id: 'trade', title: '交易域', subtitle: '订单 / 支付 / 履约', colorGroup: 'green' }),
-                        Card({ id: 'member', title: '会员域', subtitle: '注册 / 成长 / 权益', colorGroup: 'green' }),
-                        Card({ id: 'search', title: '搜索域', subtitle: '召回 / 排序 / 推荐', colorGroup: 'green' }),
+                        Card({ id: 'trade', title: '**Trade**', subtitle: 'Order & Fulfillment', colorGroup: 'green' }),
+                        Card({ id: 'member', title: '**Member**', subtitle: 'Identity & Growth', colorGroup: 'green' }),
+                        Card({ id: 'search', title: '**Search**', subtitle: 'Discovery & Ranking', colorGroup: 'green' }),
                       ],
                     }),
                   ],
                 }),
-                Divider({ label: 'Support Services', colorGroup: 'blue' }),
+                Divider({ label: 'Shared Infrastructure', colorGroup: 'blue' }),
                 LabeledRow({
                   id: 'row-support',
-                  label: '支撑层',
-                  labelWidth: 96,
+                  label: 'Support',
+                  labelWidth: 100,
                   colorGroup: 'purple',
                   children: [
                     HStack({
-                      gap: spacing.md,
+                      gap: spacing.lg,
                       children: [
-                        Card({ id: 'config', title: '配置中心', subtitle: '动态配置', colorGroup: 'purple' }),
-                        Card({ id: 'metrics', title: '观测平台', subtitle: '日志 / 指标 / Trace', colorGroup: 'purple' }),
+                        Card({ id: 'config', title: '**Config**', subtitle: 'Dynamic Management', colorGroup: 'purple' }),
+                        Card({ id: 'metrics', title: '**Observability**', subtitle: 'Logs & Metrics', colorGroup: 'purple' }),
                       ],
                     }),
                   ],

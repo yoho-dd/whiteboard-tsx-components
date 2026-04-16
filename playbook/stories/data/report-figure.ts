@@ -9,63 +9,64 @@ const story: PlaybookStory = {
   title: '图表包装与数据表',
   description: '把 Figure、Legend、Table 放在同一个报告视图里，适合做文档截图和数据说明。',
   render: () => {
-    setTheme('minimalist');
+    setTheme('business');
+    const theme = getTheme();
 
     return Whiteboard({
-      theme: 'minimalist',
+      theme: 'business',
       children: [
         VStack({
           id: 'root',
-          width: 1180,
-          gap: spacing.lg,
-          padding: spacing.xl,
-          fillColor: '#FAFBFC',
+          width: 1200,
+          gap: spacing.xl,
+          padding: spacing.xxl,
+          fillColor: theme.canvas,
           children: [
             Text({
               id: 'title',
-              text: 'Weekly Release Report',
+              text: '**Weekly Release Insights**',
               fontSize: typography.h1.fontSize,
-              textColor: '#111827',
+              textColor: theme.text.primary,
               width: 'fit-content',
               height: 'fit-content',
             }),
             Figure({
               id: 'figure-1',
-              label: 'Figure 1',
-              title: '发布健康度与告警分布',
-              caption: 'Table 与 Legend 组合展示发布质量摘要，便于在文档中复用。',
+              label: 'Report A',
+              title: 'Health Metrics & Alert Distribution',
+              caption: 'Summary of release quality and performance across core services.',
               colorGroup: 'blue',
               children: [
                 Section({
                   id: 'figure-content',
-                  title: 'Release Snapshot',
+                  title: 'Production Snapshot',
                   colorGroup: 'blue',
                   children: [
                     HStack({
-                      gap: spacing.md,
+                      gap: spacing.lg,
                       alignItems: 'start',
                       children: [
                         Table({
                           id: 'release-table',
                           colorGroup: 'blue',
-                          headers: ['服务', '状态', '耗时', '告警'],
-                          columnWidths: [220, 140, 120, 'fill'],
+                          headers: ['Service', 'Status', 'Latency', 'Alerts'],
+                          columnWidths: [240, 160, 140, 'fill'],
                           rows: [
-                            ['Trade API', Badge({ text: 'success', colorGroup: 'green' }), '4m 10s', '0'],
-                            ['Search API', Badge({ text: 'warning', colorGroup: 'yellow' }), '8m 30s', '2'],
-                            ['Coupon Job', Badge({ text: 'success', colorGroup: 'green' }), '5m 02s', '1'],
-                            ['Sync Worker', Badge({ text: 'risk', colorGroup: 'red' }), '12m 55s', '5'],
+                            ['Trade Gateway', Badge({ text: 'Healthy', colorGroup: 'green' }), '124ms', '0'],
+                            ['Search Indexer', Badge({ text: 'Warning', colorGroup: 'yellow' }), '842ms', '2'],
+                            ['Coupon Engine', Badge({ text: 'Healthy', colorGroup: 'green' }), '45ms', '0'],
+                            ['Sync Worker', Badge({ text: 'Critical', colorGroup: 'red' }), '2.4s', '15'],
                           ],
                         }),
                         Legend({
                           id: 'legend',
-                          title: '状态说明',
+                          title: 'Status Key',
                           direction: 'vertical',
                           colorGroup: 'purple',
                           items: [
-                            { color: '#16A34A', label: 'success: 发布正常' },
-                            { color: '#F59E0B', label: 'warning: 需要关注' },
-                            { color: '#DC2626', label: 'risk: 存在阻塞' },
+                            { color: theme.groups.green.border, label: 'Healthy: No issues' },
+                            { color: theme.groups.yellow.border, label: 'Warning: High latency' },
+                            { color: theme.groups.red.border, label: 'Critical: Action required' },
                           ],
                         }),
                       ],

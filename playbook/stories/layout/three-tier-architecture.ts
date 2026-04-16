@@ -9,23 +9,24 @@ const story: PlaybookStory = {
   title: '三层系统架构图',
   description: 'Section + Card + Connector 的经典分层布局，适合预览容器嵌套、宽度链和连接线效果。',
   render: () => {
-    setTheme('classic');
+    setTheme('business');
+    const theme = getTheme();
 
     return Whiteboard({
-      theme: 'classic',
+      theme: 'business',
       children: [
         VStack({
           id: 'root',
           width: 1200,
-          gap: spacing.lg,
-          padding: spacing.xl,
-          fillColor: '#F8FAFC',
+          gap: spacing.xl,
+          padding: spacing.xxl,
+          fillColor: theme.canvas,
           children: [
             Text({
               id: 'title',
-              text: '三层系统架构图',
+              text: '**三层系统架构图**',
               fontSize: typography.h1.fontSize,
-              textColor: '#1F2329',
+              textColor: theme.text.primary,
               width: 'fit-content',
               height: 'fit-content',
             }),
@@ -33,14 +34,13 @@ const story: PlaybookStory = {
               id: 'access-layer',
               title: '用户接入层',
               colorGroup: 'blue',
-              borderDash: 'dashed',
               children: [
                 HStack({
                   gap: spacing.lg,
                   justifyContent: 'center',
                   children: [
-                    Card({ id: 'cdn', title: '**CDN**', subtitle: '内容分发网络' }),
-                    Card({ id: 'gateway', title: '**API 网关**', subtitle: '鉴权 / 限流 / 聚合' }),
+                    IconCard({ id: 'cdn', icon: 'cloud', title: '**CDN**', subtitle: '内容分发网络', colorGroup: 'blue' }),
+                    IconCard({ id: 'gateway', icon: 'shield', title: '**API 网关**', subtitle: '鉴权 / 限流 / 聚合', colorGroup: 'blue' }),
                   ],
                 }),
               ],
@@ -49,10 +49,9 @@ const story: PlaybookStory = {
               id: 'service-layer',
               title: '业务逻辑层',
               colorGroup: 'green',
-              borderDash: 'dashed',
               children: [
                 HStack({
-                  gap: spacing.md,
+                  gap: spacing.lg,
                   alignItems: 'stretch',
                   children: [
                     Card({ id: 'order-svc', title: '**订单服务**', subtitle: '下单 / 查询 / 退款' }),
@@ -67,15 +66,14 @@ const story: PlaybookStory = {
               id: 'data-layer',
               title: '数据持久层',
               colorGroup: 'purple',
-              borderDash: 'dashed',
               children: [
                 HStack({
                   gap: spacing.lg,
                   justifyContent: 'center',
                   children: [
-                    Card({ id: 'redis', title: '**Redis**', subtitle: '缓存 / 锁 / 会话', colorGroup: 'red' }),
-                    Card({ id: 'mysql', title: '**MySQL**', subtitle: '主库 / 从库 / 读写分离' }),
-                    Card({ id: 'kafka', title: '**Kafka**', subtitle: '事件总线', colorGroup: 'yellow' }),
+                    IconCard({ id: 'redis', icon: 'zap', title: '**Redis**', subtitle: '缓存 / 锁 / 会话', colorGroup: 'red' }),
+                    IconCard({ id: 'mysql', icon: 'database', title: '**MySQL**', subtitle: '主库 / 从库 / 读写分离', colorGroup: 'blue' }),
+                    IconCard({ id: 'kafka', icon: 'send', title: '**Kafka**', subtitle: '事件总线', colorGroup: 'yellow' }),
                   ],
                 }),
               ],
