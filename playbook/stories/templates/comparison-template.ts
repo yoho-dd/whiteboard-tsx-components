@@ -32,14 +32,6 @@ const story: PlaybookStory = {
               id: 'column-saas',
               title: 'SaaS 方案',
               colorGroup: 'green',
-              shape: {
-                type: 'rect',
-                borderRadius: 12,
-                fillColor: '#FFFFFF',
-                borderColor: '#B8E0C2',
-                borderWidth: 1,
-                contentPadding: [spacing.sm, spacing.sm],
-              },
               children: [
                 BulletList({ items: ['交付快', '前期成本低', '扩展能力受限'] }),
                 FlowchartTemplate({

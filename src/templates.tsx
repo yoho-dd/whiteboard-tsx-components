@@ -32,7 +32,7 @@ import type {
 } from './types.js';
 import type { WBNode } from './auto-layout-dsl/types.js';
 
-const DEFAULT_TEMPLATE_NODE_WIDTH = 'fit-content(220)';
+const DEFAULT_TEMPLATE_NODE_WIDTH = 260;
 
 function clean<T extends Record<string, unknown>>(obj: T): T {
   const result: Record<string, unknown> = {};

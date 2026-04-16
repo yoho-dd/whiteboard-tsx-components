@@ -46,6 +46,11 @@ import type { WBNode, WBChild } from './auto-layout-dsl/types.js';
 
 // ─── Internal Helpers ───────────────────────────────────────────────────────
 
+function truncateText(text: string | undefined, max: number): string | undefined {
+  if (!text) return text;
+  return text.length > max ? text.slice(0, max) + '...' : text;
+}
+
 function flattenChildren(children: unknown): WBChild[] {
   const normalized = normalizeChildren(children);
   return normalized.filter((c): c is WBChild => c != null && typeof c === 'object') as WBChild[];
@@ -80,7 +85,8 @@ export function Card(props: CardProps): WBNode {
     title,
     subtitle,
     colorGroup,
-    width = 'fill-container(200)',
+    width = 'fill-container',
+    maxWidth = 360,
     height = 'fit-content',
     fillColor,
     borderColor,
@@ -110,7 +116,7 @@ export function Card(props: CardProps): WBNode {
       type: 'text',
       width: 'fill-container' as any,
       height: 'fit-content' as any,
-      text: processText(subtitle),
+      text: processText(truncateText(subtitle, 60)),
       fontSize: typography.sub.fontSize,
       textColor: theme.text.secondary,
     }) as WBChild);
@@ -158,7 +164,8 @@ export function IconCard(props: IconCardProps): WBNode {
     subtitle,
     direction = 'horizontal',
     colorGroup,
-    width = 'fill-container(200)',
+    width = 'fill-container',
+    maxWidth = 360,
     height = 'fit-content',
     fillColor,
     borderColor,
@@ -197,7 +204,7 @@ export function IconCard(props: IconCardProps): WBNode {
       type: 'text',
       width: 'fill-container' as any,
       height: 'fit-content' as any,
-      text: processText(subtitle),
+      text: processText(truncateText(subtitle, 60)),
       fontSize: typography.sub.fontSize,
       textColor: theme.text.secondary,
     }) as WBChild);
@@ -820,7 +827,8 @@ export function DetailCard(props: DetailCardProps): WBNode {
     children,
     footer,
     colorGroup,
-    width = 'fill-container(200)' as any,
+    width = 'fill-container' as any,
+    maxWidth = 400,
     height = 'fit-content' as any,
     fillColor,
     borderColor,
@@ -866,7 +874,7 @@ export function DetailCard(props: DetailCardProps): WBNode {
       type: 'text',
       width: 'fill-container' as any,
       height: 'fit-content' as any,
-      text: processText(subtitle),
+      text: processText(truncateText(subtitle, 60)),
       fontSize: typography.sub.fontSize,
       textColor: theme.text.secondary,
     }) as WBChild);
@@ -925,7 +933,7 @@ export function DetailCard(props: DetailCardProps): WBNode {
             type: 'text',
             width: 'fill-container' as any,
             height: 'fit-content' as any,
-            text: processText(entry.value),
+            text: processText(truncateText(entry.value, 80)),
             fontSize: typography.sub.fontSize,
             textColor: colors?.text ?? theme.text.primary,
           }) as WBChild,

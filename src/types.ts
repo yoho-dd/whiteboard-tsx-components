@@ -34,6 +34,11 @@ export interface FrameBaseProps {
   y?: number;
   width?: WBSizeValue;
   height?: WBSizeValue;
+  minWidth?: number | string;
+  maxWidth?: number | string;
+  minHeight?: number | string;
+  maxHeight?: number | string;
+  flex?: number;
   gap?: number;
   padding?: number | [number, number] | [number, number, number, number];
   justifyContent?: 'start' | 'center' | 'end' | 'space-between' | 'space-around';
