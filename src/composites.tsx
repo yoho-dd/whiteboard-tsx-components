@@ -46,6 +46,11 @@ import type { WBNode, WBChild } from './auto-layout-dsl/types.js';
 
 // ─── Internal Helpers ───────────────────────────────────────────────────────
 
+function truncateText(text: string | undefined, max: number): string | undefined {
+  if (!text) return text;
+  return text.length > max ? text.slice(0, max) + '...' : text;
+}
+
 function flattenChildren(children: unknown): WBChild[] {
   const normalized = normalizeChildren(children);
   return normalized.filter((c): c is WBChild => c != null && typeof c === 'object') as WBChild[];
@@ -80,7 +85,8 @@ export function Card(props: CardProps): WBNode {
     title,
     subtitle,
     colorGroup,
-    width = 'fill-container(200)',
+    width = 'fill-container',
+    maxWidth = 360,
     height = 'fit-content',
     fillColor,
     borderColor,
@@ -110,7 +116,7 @@ export function Card(props: CardProps): WBNode {
       type: 'text',
       width: 'fill-container' as any,
       height: 'fit-content' as any,
-      text: processText(subtitle),
+      text: processText(truncateText(subtitle, 60)),
       fontSize: typography.sub.fontSize,
       textColor: theme.text.secondary,
     }) as WBChild);
@@ -127,10 +133,10 @@ export function Card(props: CardProps): WBNode {
     layout: 'vertical',
     width,
     height,
-    padding: [10, 16] as [number, number],
-    gap: 4,
-    fillColor: fillColor ?? colors?.fill ?? '#FFFFFF',
-    borderColor: borderColor ?? colors?.softBorder ?? theme.text.meta,
+    padding: [spacing.md, spacing.lg] as [number, number],
+    gap: spacing.sm,
+    fillColor: fillColor ?? colors?.fill ?? theme.canvas,
+    borderColor: borderColor ?? colors?.softBorder ?? theme.connector.color,
     borderWidth: borderWidth ?? borders.card.width,
     borderRadius: borderRadius ?? borders.card.radius,
     children: cardChildren,
@@ -158,7 +164,8 @@ export function IconCard(props: IconCardProps): WBNode {
     subtitle,
     direction = 'horizontal',
     colorGroup,
-    width = 'fill-container(200)',
+    width = 'fill-container',
+    maxWidth = 360,
     height = 'fit-content',
     fillColor,
     borderColor,
@@ -197,7 +204,7 @@ export function IconCard(props: IconCardProps): WBNode {
       type: 'text',
       width: 'fill-container' as any,
       height: 'fit-content' as any,
-      text: processText(subtitle),
+      text: processText(truncateText(subtitle, 60)),
       fontSize: typography.sub.fontSize,
       textColor: theme.text.secondary,
     }) as WBChild);
@@ -225,11 +232,11 @@ export function IconCard(props: IconCardProps): WBNode {
     layout: isHorizontal ? 'horizontal' : 'vertical',
     width,
     height,
-    padding: [10, 16] as [number, number],
-    gap: isHorizontal ? 10 : 8,
+    padding: [spacing.md, spacing.lg] as [number, number],
+    gap: isHorizontal ? spacing.md : spacing.sm,
     alignItems: isHorizontal ? 'center' : ('center' as any),
-    fillColor: fillColor ?? colors?.fill ?? '#FFFFFF',
-    borderColor: borderColor ?? colors?.softBorder ?? theme.text.meta,
+    fillColor: fillColor ?? colors?.fill ?? theme.canvas,
+    borderColor: borderColor ?? colors?.softBorder ?? theme.connector.color,
     borderWidth: borderWidth ?? borders.card.width,
     borderRadius: borderRadius ?? borders.card.radius,
     children: [iconNode, textContainer],
@@ -263,9 +270,9 @@ export function Badge(props: BadgeProps): WBNode {
     layout: 'horizontal',
     width: 'fit-content' as any,
     height: 'fit-content' as any,
-    padding: [2, 8] as [number, number],
+    padding: [spacing.xs, spacing.sm] as [number, number],
     borderRadius,
-    fillColor: fillColor ?? colors?.badgeBg ?? '#F0F4FC',
+    fillColor: fillColor ?? colors?.badgeBg ?? theme.text.meta,
     children: [
       clean({
         type: 'text',
@@ -273,7 +280,7 @@ export function Badge(props: BadgeProps): WBNode {
         height: 'fit-content' as any,
         text: processText(text),
         fontSize,
-        textColor: textColor ?? colors?.border ?? theme.text.secondary,
+        textColor: textColor ?? colors?.border ?? theme.canvas,
       }),
     ],
   }) as WBNode;
@@ -341,9 +348,9 @@ export function Section(props: SectionProps): WBNode {
     width,
     height,
     gap,
-    padding: padding ?? [spacing.lg, spacing.lg],
-    fillColor: fillColor ?? colors?.bg ?? '#F8FAFC',
-    borderColor: borderColor ?? colors?.border,
+    padding: padding ?? [spacing.xl, spacing.xl],
+    fillColor: fillColor ?? colors?.bg ?? theme.canvas,
+    borderColor: borderColor ?? colors?.border ?? theme.connector.color,
     borderWidth: borderWidth ?? (colors ? borders.partition.width : undefined),
     borderDash,
     borderRadius: borderRadius ?? borders.partition.radius,
@@ -667,10 +674,10 @@ export function Legend(props: LegendProps): WBNode {
     layout: 'vertical',
     width,
     height: 'fit-content' as any,
-    padding: [10, 16] as [number, number],
-    gap: spacing.sm,
-    fillColor: fillColor ?? colors?.fill ?? '#FFFFFF',
-    borderColor: borderColor ?? colors?.softBorder ?? theme.text.meta,
+    padding: [spacing.md, spacing.lg] as [number, number],
+    gap: spacing.md,
+    fillColor: fillColor ?? colors?.fill ?? theme.canvas,
+    borderColor: borderColor ?? colors?.softBorder ?? theme.connector.color,
     borderWidth: borders.card.width,
     borderRadius,
     children: legendChildren,
@@ -764,11 +771,11 @@ export function Callout(props: CalloutProps): WBNode {
     layout: 'horizontal',
     width,
     height: 'fit-content' as any,
-    gap: 10,
-    padding: [12, 16] as [number, number],
+    gap: spacing.md,
+    padding: [spacing.md, spacing.lg] as [number, number],
     alignItems: 'start',
-    fillColor: fillColor ?? colors?.bg ?? '#F8FAFC',
-    borderColor: borderColor ?? colors?.border,
+    fillColor: fillColor ?? colors?.bg ?? theme.canvas,
+    borderColor: borderColor ?? colors?.border ?? theme.connector.color,
     borderWidth: borders.partition.width,
     borderRadius,
     children: [
@@ -820,7 +827,8 @@ export function DetailCard(props: DetailCardProps): WBNode {
     children,
     footer,
     colorGroup,
-    width = 'fill-container(200)' as any,
+    width = 'fill-container' as any,
+    maxWidth = 400,
     height = 'fit-content' as any,
     fillColor,
     borderColor,
@@ -866,7 +874,7 @@ export function DetailCard(props: DetailCardProps): WBNode {
       type: 'text',
       width: 'fill-container' as any,
       height: 'fit-content' as any,
-      text: processText(subtitle),
+      text: processText(truncateText(subtitle, 60)),
       fontSize: typography.sub.fontSize,
       textColor: theme.text.secondary,
     }) as WBChild);
@@ -925,7 +933,7 @@ export function DetailCard(props: DetailCardProps): WBNode {
             type: 'text',
             width: 'fill-container' as any,
             height: 'fit-content' as any,
-            text: processText(entry.value),
+            text: processText(truncateText(entry.value, 80)),
             fontSize: typography.sub.fontSize,
             textColor: colors?.text ?? theme.text.primary,
           }) as WBChild,
@@ -970,10 +978,10 @@ export function DetailCard(props: DetailCardProps): WBNode {
     layout: 'vertical',
     width,
     height,
-    padding: [12, 16] as [number, number],
-    gap: spacing.sm,
-    fillColor: fillColor ?? colors?.fill ?? '#FFFFFF',
-    borderColor: borderColor ?? colors?.softBorder ?? theme.text.meta,
+    padding: [spacing.md, spacing.lg] as [number, number],
+    gap: spacing.md,
+    fillColor: fillColor ?? colors?.fill ?? theme.canvas,
+    borderColor: borderColor ?? colors?.softBorder ?? theme.connector.color,
     borderWidth: borderWidth ?? borders.card.width,
     borderRadius: borderRadius ?? borders.card.radius,
     children: cardChildren,
@@ -1070,13 +1078,13 @@ export function Table(props: TableProps): WBNode {
   function buildRow(cells: TableCell[], rowIndex: number, isHeader: boolean): WBChild {
     let rowFill: string | undefined;
     if (isHeader) {
-      rowFill = colors?.badgeBg ?? '#F0F4FC';
+      rowFill = colors?.badgeBg ?? theme.text.meta;
     } else if (striped) {
       rowFill = rowIndex % 2 === 0
-        ? (colors?.fill ?? '#FFFFFF')
-        : (colors?.bg ?? '#F8FAFC');
+        ? (colors?.fill ?? theme.canvas)
+        : (colors?.bg ?? theme.canvas);
     } else {
-      rowFill = colors?.fill ?? '#FFFFFF';
+      rowFill = colors?.fill ?? theme.canvas;
     }
 
     return clean({
@@ -1109,8 +1117,8 @@ export function Table(props: TableProps): WBNode {
     width,
     height: 'fit-content' as any,
     gap: 0,
-    fillColor: fillColor ?? colors?.fill ?? '#FFFFFF',
-    borderColor: borderColor ?? colors?.softBorder ?? theme.text.meta,
+    fillColor: fillColor ?? colors?.fill ?? theme.canvas,
+    borderColor: borderColor ?? colors?.softBorder ?? theme.connector.color,
     borderWidth: borders.table.width,
     borderRadius,
     children: tableChildren,
@@ -1200,8 +1208,8 @@ export function Figure(props: FigureProps): WBNode {
     height: 'fit-content' as any,
     gap: spacing.md,
     padding: padding ?? [spacing.lg, spacing.lg],
-    fillColor: fillColor ?? colors?.bg ?? '#F8FAFC',
-    borderColor: borderColor ?? colors?.softBorder ?? theme.text.meta,
+    fillColor: fillColor ?? colors?.bg ?? theme.canvas,
+    borderColor: borderColor ?? colors?.softBorder ?? theme.connector.color,
     borderWidth: borderWidth ?? borders.card.width,
     borderRadius,
     children: figureChildren,
@@ -1314,10 +1322,10 @@ export function Pipeline(props: PipelineProps): WBNode {
         layout: 'vertical',
         width: isHorizontal ? ('fill-container(160)' as any) : ('fill-container' as any),
         height: 'fit-content' as any,
-        padding: [10, 16] as [number, number],
+        padding: [spacing.md, spacing.lg] as [number, number],
         gap: spacing.sm,
-        fillColor: colors?.fill ?? '#FFFFFF',
-        borderColor: colors?.softBorder ?? theme.text.meta,
+        fillColor: colors?.fill ?? theme.canvas,
+        borderColor: colors?.softBorder ?? theme.connector.color,
         borderWidth: borders.card.width,
         borderRadius: borders.card.radius,
         children: mainChildren,
@@ -1356,10 +1364,10 @@ export function Pipeline(props: PipelineProps): WBNode {
         layout: 'vertical',
         width: isHorizontal ? ('fill-container(160)' as any) : ('fill-container' as any),
         height: 'fit-content' as any,
-        padding: [10, 16] as [number, number],
-        gap: 4,
-        fillColor: colors?.fill ?? '#FFFFFF',
-        borderColor: colors?.softBorder ?? theme.text.meta,
+        padding: [spacing.md, spacing.lg] as [number, number],
+        gap: spacing.sm,
+        fillColor: colors?.fill ?? theme.canvas,
+        borderColor: colors?.softBorder ?? theme.connector.color,
         borderWidth: borders.card.width,
         borderRadius: borders.card.radius,
         children: mainChildren,

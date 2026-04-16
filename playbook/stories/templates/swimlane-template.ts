@@ -1,6 +1,6 @@
 import type { PlaybookStory } from '../../types.js';
 import { setTheme, spacing } from '../../../src/theme.js';
-import { Diamond, Frame, Whiteboard } from '../../../src/primitives.js';
+import { Whiteboard } from '../../../src/primitives.js';
 import { BulletList, Callout, DetailCard } from '../../../src/composites.js';
 import { SwimlaneTemplate, FlowchartTemplate } from '../../../src/templates.js';
 
@@ -42,19 +42,14 @@ const story: PlaybookStory = {
               steps: [
                 {
                   id: 'ops-review',
-                  component: Frame({
-                    id: 'ops-review-shell',
-                    layout: 'vertical',
-                    width: 'fit-content(220)',
-                    height: 'fit-content',
-                    gap: spacing.sm,
+                  component: DetailCard({
+                    id: 'ops-review-card',
+                    title: '人工审核',
+                    colorGroup: 'yellow',
                     children: [
-                      Diamond({ id: 'ops-review-decision', width: 180, height: 96, text: '人工审核' }),
+                      Callout({ variant: 'warning', title: '异常订单', body: '命中高风险规则时升级复核。' }),
                     ],
                   }),
-                  children: [
-                    Callout({ variant: 'warning', title: '异常订单', body: '命中高风险规则时升级复核。' }),
-                  ],
                 },
               ],
             },
@@ -68,7 +63,7 @@ const story: PlaybookStory = {
                   component: DetailCard({
                     id: 'system-refund-card',
                     title: '退款执行',
-                    subtitle: '系统动作',
+                    colorGroup: 'green',
                     children: [
                       FlowchartTemplate({
                         id: 'refund-system-flow',

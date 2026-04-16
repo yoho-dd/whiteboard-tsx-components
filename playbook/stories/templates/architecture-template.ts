@@ -53,6 +53,7 @@ const story: PlaybookStory = {
                     id: 'trade-card',
                     title: '交易域',
                     subtitle: '订单 / 履约 / 结算',
+                    width: 'fill-container(200)',
                     children: [
                       FlowchartTemplate({
                         id: 'trade-flow',
@@ -66,7 +67,7 @@ const story: PlaybookStory = {
                         ],
                         edges: [['trade-req', 'trade-check'], ['trade-check', 'trade-done']],
                       }),
-                    ],
+                    ]
                   }),
                 },
                 {

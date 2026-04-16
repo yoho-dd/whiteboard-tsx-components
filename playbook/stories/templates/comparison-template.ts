@@ -1,6 +1,6 @@
 import type { PlaybookStory } from '../../types.js';
 import { setTheme, spacing } from '../../../src/theme.js';
-import { Frame, Whiteboard } from '../../../src/primitives.js';
+import { Whiteboard } from '../../../src/primitives.js';
 import { BulletList, Callout } from '../../../src/composites.js';
 import { ComparisonTemplate, FlowchartTemplate } from '../../../src/templates.js';
 
@@ -8,7 +8,7 @@ const story: PlaybookStory = {
   id: 'template-comparison',
   category: 'Templates',
   title: '模板层：对比图',
-  description: '演示 ComparisonTemplate 的多列对比骨架，以及列内组合组件、叶子 shape 和子流程的能力。',
+  description: '演示 ComparisonTemplate 的多列对比骨架，以及列内嵌入 shape、组件和子流程的能力。',
   render: () => {
     setTheme('tech');
 
@@ -32,33 +32,21 @@ const story: PlaybookStory = {
               id: 'column-saas',
               title: 'SaaS 方案',
               colorGroup: 'green',
-              component: Frame({
-                id: 'saas-shell',
-                layout: 'vertical',
-                width: 'fill-container',
-                height: 'fit-content',
-                gap: spacing.sm,
-                padding: [spacing.sm, spacing.sm],
-                fillColor: '#FFFFFF',
-                borderColor: '#B8E0C2',
-                borderWidth: 1,
-                borderRadius: 12,
-                children: [
-                  BulletList({ items: ['交付快', '前期成本低', '扩展能力受限'] }),
-                  FlowchartTemplate({
-                    id: 'saas-rollout',
-                    title: '上线路径',
-                    width: 'fill-container',
-                    padding: [spacing.sm, spacing.sm],
-                    nodes: [
-                      { id: 'saas-poc', title: 'POC' },
-                      { id: 'saas-buy', title: '采购' },
-                      { id: 'saas-launch', title: '接入上线' },
-                    ],
-                    edges: [['saas-poc', 'saas-buy'], ['saas-buy', 'saas-launch']],
-                  }),
-                ],
-              }),
+              children: [
+                BulletList({ items: ['交付快', '前期成本低', '扩展能力受限'] }),
+                FlowchartTemplate({
+                  id: 'saas-rollout',
+                  title: '上线路径',
+                  width: 'fill-container',
+                  padding: [spacing.sm, spacing.sm],
+                  nodes: [
+                    { id: 'saas-poc', title: 'POC' },
+                    { id: 'saas-buy', title: '采购' },
+                    { id: 'saas-launch', title: '接入上线' },
+                  ],
+                  edges: [['saas-poc', 'saas-buy'], ['saas-buy', 'saas-launch']],
+                }),
+              ],
             },
           ],
         }),

@@ -548,16 +548,16 @@ describe('IconCard', () => {
   });
 });
 
-describe('Badge', () => {
-  beforeEach(() => setTheme('classic'));
+  describe('Badge', () => {
+    beforeEach(() => setTheme('classic'));
 
-  it('creates a pill badge', () => {
-    const node = Badge({ text: 'v2.0' }) as any;
-    expect(node.type).toBe('frame');
-    expect(node.borderRadius).toBe(borders.badge.radius);
-    expect(node.padding).toEqual([2, 8]);
-    expect(node.children[0].text).toBe('v2.0');
-  });
+    it('creates a pill badge', () => {
+      const node = Badge({ text: 'v2.0' }) as any;
+      expect(node.type).toBe('frame');
+      expect(node.borderRadius).toBe(borders.badge.radius);
+      expect(node.padding).toEqual([spacing.xs, spacing.sm]);
+      expect(node.children[0].text).toBe('v2.0');
+    });
 
   it('applies colorGroup to badge', () => {
     const node = Badge({ text: 'OK', colorGroup: 'green' }) as any;
@@ -626,38 +626,38 @@ describe('LabeledRow', () => {
 
 // ─── Theme Switching ────────────────────────────────────────────────────────
 
-describe('Theme switching', () => {
-  it('applies tech theme connector color', () => {
-    setTheme('tech');
-    const node = Connector({ from: 'a', to: 'b' }) as any;
-    expect(node.connector.lineColor).toBe('#475569');
-  });
-
-  it('applies minimalist theme card colors', () => {
-    setTheme('minimalist');
-    const node = Card({ id: 'c1', title: 'Test', colorGroup: 'blue' }) as any;
-    expect(node.fillColor).toBe('#FFFFFF');
-    expect(node.borderColor).toBe('#E9ECEF'); // minimalist blue softBorder
-  });
-
-  it('Whiteboard sets theme', () => {
-    // Whiteboard sets theme internally, then processes children.
-    // Since children are evaluated eagerly (before Whiteboard runs),
-    // we need to create the connector inside the Whiteboard call flow.
-    // The Whiteboard component calls setTheme first, then flattenChildren.
-    // But JSX children are evaluated before the parent function runs.
-    // So we test by calling setTheme manually then creating the document.
-    setTheme('fresh');
-    const doc = Whiteboard({
-      theme: 'fresh',
-      children: [
-        Connector({ from: 'a', to: 'b' }),
-      ],
+  describe('Theme switching', () => {
+    it('applies tech theme connector color', () => {
+      setTheme('tech');
+      const node = Connector({ from: 'a', to: 'b' }) as any;
+      expect(node.connector.lineColor).toBe('#475569');
     });
-    const connector = doc.nodes.find((n: any) => n.type === 'connector') as any;
-    expect(connector.connector.lineColor).toBe('#86EFAC'); // fresh connector color
+
+    it('applies minimalist theme card colors', () => {
+      setTheme('minimalist');
+      const node = Card({ id: 'c1', title: 'Test', colorGroup: 'blue' }) as any;
+      expect(node.fillColor).toBe('#FFFFFF');
+      expect(node.borderColor).toBe('#D0EBFF'); // minimalist blue softBorder
+    });
+
+    it('Whiteboard sets theme', () => {
+      // Whiteboard sets theme internally, then processes children.
+      // Since children are evaluated eagerly (before Whiteboard runs),
+      // we need to create the connector inside the Whiteboard call flow.
+      // The Whiteboard component calls setTheme first, then flattenChildren.
+      // But JSX children are evaluated before the parent function runs.
+      // So we test by calling setTheme manually then creating the document.
+      setTheme('fresh');
+      const doc = Whiteboard({
+        theme: 'fresh',
+        children: [
+          Connector({ from: 'a', to: 'b' }),
+        ],
+      });
+      const connector = doc.nodes.find((n: any) => n.type === 'connector') as any;
+      expect(connector.connector.lineColor).toBe('#94A3B8'); // fresh connector color
+    });
   });
-});
 
 // ─── New Composite Components ──────────────────────────────────────────────
 
@@ -952,16 +952,16 @@ describe('Table', () => {
     expect(dataRow.children[0].children[0].text).toBe('foo');
   });
 
-  it('applies alternating row colors when striped', () => {
-    const node = Table({
-      headers: ['A'],
-      rows: [['r0'], ['r1'], ['r2']],
-      striped: true,
-    }) as any;
-    // Row 0 (even) → fill color, Row 1 (odd) → bg color
-    expect(node.children[1].fillColor).toBe('#FFFFFF'); // fill (even row)
-    expect(node.children[2].fillColor).toBe('#F8FAFC'); // bg (odd row, no colorGroup)
-  });
+    it('applies alternating row colors when striped', () => {
+      const node = Table({
+        headers: ['A'],
+        rows: [['r0'], ['r1'], ['r2']],
+        striped: true,
+      }) as any;
+      // Row 0 (even) → fill color, Row 1 (odd) → bg color
+      expect(node.children[1].fillColor).toBe('#FFFFFF'); // fill (even row)
+      expect(node.children[2].fillColor).toBe('#FFFFFF'); // bg (odd row, no colorGroup)
+    });
 
   it('applies colorGroup to table', () => {
     const node = Table({
@@ -1033,11 +1033,11 @@ describe('Figure', () => {
     expect(node.children).toHaveLength(2);
   });
 
-  it('applies border and padding', () => {
-    const node = Figure({ children: [] }) as any;
-    expect(node.borderRadius).toBe(12); // partition radius
-    expect(node.padding).toEqual([24, 24]);
-  });
+    it('applies border and padding', () => {
+      const node = Figure({ children: [] }) as any;
+      expect(node.borderRadius).toBe(12); // partition radius
+      expect(node.padding).toEqual([spacing.lg, spacing.lg]);
+    });
 });
 
 describe('Pipeline', () => {

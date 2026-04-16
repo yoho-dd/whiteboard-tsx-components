@@ -32,7 +32,7 @@ import type {
 } from './types.js';
 import type { WBNode } from './auto-layout-dsl/types.js';
 
-const DEFAULT_TEMPLATE_NODE_WIDTH = 'fit-content(220)';
+const DEFAULT_TEMPLATE_NODE_WIDTH = 260;
 
 function clean<T extends Record<string, unknown>>(obj: T): T {
   const result: Record<string, unknown> = {};
@@ -188,10 +188,10 @@ export function ArchitectureTemplate(props: ArchitectureTemplateProps): WBNode {
   const {
     id,
     title,
-    width = 1200,
-    gap = spacing.lg,
-    padding = spacing.xl,
-    fillColor = '#F8FAFC',
+    width = 'fit-content',
+    gap = spacing.xl,
+    padding = spacing.xxl,
+    fillColor,
     layers,
   } = props;
 
@@ -205,15 +205,15 @@ export function ArchitectureTemplate(props: ArchitectureTemplateProps): WBNode {
     const layerNodes = layer.nodes.map(renderTemplateNode);
     const direction = layer.direction ?? 'horizontal';
     const content = direction === 'vertical'
-      ? VStack({
+        ? VStack({
           id: layer.id ? `${layer.id}-stack` : `architecture-layer-${index}-stack`,
-          gap: spacing.md,
+          gap: spacing.lg,
           children: layerNodes,
         })
       : HStack({
           id: layer.id ? `${layer.id}-stack` : `architecture-layer-${index}-stack`,
-          gap: spacing.md,
-          alignItems: 'stretch',
+          gap: spacing.lg,
+          alignItems: 'center',
           children: layerNodes,
         });
 
@@ -264,10 +264,10 @@ export function OrganizationChartTemplate(props: OrganizationChartTemplateProps)
   const {
     id,
     title,
-    width = 1200,
-    gap = spacing.lg,
-    padding = spacing.xl,
-    fillColor = '#F8FAFC',
+    width = 'fit-content',
+    gap = spacing.xl,
+    padding = spacing.xxl,
+    fillColor,
     nodes,
   } = props;
 
@@ -299,10 +299,10 @@ export function SwimlaneTemplate(props: SwimlaneTemplateProps): WBNode {
   const {
     id,
     title,
-    width = 1200,
-    gap = spacing.lg,
-    padding = spacing.xl,
-    fillColor = '#F8FAFC',
+    width = 'fit-content',
+    gap = spacing.xl,
+    padding = spacing.xxl,
+    fillColor,
     lanes,
     connectors,
   } = props;
@@ -312,7 +312,7 @@ export function SwimlaneTemplate(props: SwimlaneTemplateProps): WBNode {
 
   children.push(HStack({
     id: id ? `${id}-lanes` : 'swimlane-template-lanes',
-    gap: spacing.md,
+    gap: spacing.lg,
     alignItems: 'stretch',
     children: lanes.map((lane) => {
       const direction = lane.direction ?? 'vertical';
@@ -320,12 +320,13 @@ export function SwimlaneTemplate(props: SwimlaneTemplateProps): WBNode {
       const laneBody = direction === 'horizontal'
         ? HStack({
             id: `${lane.id}-body`,
-            gap: spacing.md,
+            gap: spacing.lg,
+            alignItems: 'center',
             children: stepChildren,
           })
         : VStack({
             id: `${lane.id}-body`,
-            gap: spacing.md,
+            gap: spacing.lg,
             children: stepChildren,
           });
 
@@ -378,10 +379,10 @@ export function ComparisonTemplate(props: ComparisonTemplateProps): WBNode {
   const {
     id,
     title,
-    width = 1200,
-    gap = spacing.lg,
-    padding = spacing.xl,
-    fillColor = '#F8FAFC',
+    width = 'fit-content',
+    gap = spacing.xl,
+    padding = spacing.xxl,
+    fillColor,
     columns,
   } = props;
 
@@ -389,7 +390,7 @@ export function ComparisonTemplate(props: ComparisonTemplateProps): WBNode {
   if (title) children.push(makeTemplateTitle(`${id ?? 'comparison-template'}-title`, title));
   children.push(HStack({
     id: id ? `${id}-columns` : 'comparison-template-columns',
-    gap: spacing.md,
+    gap: spacing.lg,
     alignItems: 'stretch',
     children: columns.map(renderComparisonColumn),
   }));
@@ -408,10 +409,10 @@ export function FlowchartTemplate(props: FlowchartTemplateProps): WBNode {
   const {
     id,
     title,
-    width = 1200,
-    gap = spacing.lg,
-    padding = spacing.xl,
-    fillColor = '#F8FAFC',
+    width = 'fit-content',
+    gap = spacing.xl,
+    padding = spacing.xxl,
+    fillColor,
     nodes,
     edges,
     rankdir = 'TB',

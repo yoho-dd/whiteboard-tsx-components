@@ -167,7 +167,7 @@ describe('Template layer', () => {
 
     const columns = node.children[0];
     const leftSection = columns.children[0];
-    expect(leftSection.children[1].width).toBe('fit-content(220)');
+    expect(leftSection.children[1].width).toBe(260);
   });
 
   it('rejects shaped template nodes with nested children', () => {
