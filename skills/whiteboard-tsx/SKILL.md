@@ -2,7 +2,7 @@
 name: whiteboard-tsx
 description: >
   使用 TSX 组件库绘制飞书画板图表（架构图、流程图、组织架构等）。
-  组件库提供 Card、Section、IconCard 等可复用组件和 Design Token 系统，
+  组件库提供 Card、Section、IconCard 等可复用组件 and Design Token 系统，
   比原始 JSON DSL 更高效、更一致。当用户要求画图时可选择此 skill。
 compatibility: Requires Node.js 18+, npx tsx
 ---
@@ -78,9 +78,10 @@ whiteboard-cli -i diagram.json -o diagram.png
 2. **宽度链必须完整。** 根容器必须有固定 `width`（如 1200），中间容器用 `fill-container`，否则子节点宽度为 0，文字变成竖排。
 3. **Connector 的 from/to 必须是已存在的 id。** 每个需要被连线引用的节点必须设置 `id`。
 4. **Connector 可以写在任意位置，会自动提升到顶层。** 不需要手动放到最外层。
-5. **所有 text/title/subtitle 支持 markdown 增强语法。** `**粗体**`、`*斜体*`、`<color=#HEX>文字</color>`、`<size=N>文字</size>`。
-6. **次要文本自动截断。** 为了防止长文本破坏布局，`subtitle` 和 `entries` 中的文本超过一定长度（60-80字）会自动截断并显示 `...`。
-7. **约束优先。** 模板层节点默认使用 `fill-container`（受 `maxWidth` 限制）或 `fit-content` 以保证布局自动平衡，优先保证图表比例协调。
+5. **连线美观性约束。** 为了避免连线像蜘蛛网一样乱穿组件，对于跨层级或远距离连线，**必须显式指定** `lineShape: 'rightAngle' | 'curve'` 和出入锚点（`fromAnchor`, `toAnchor`）。默认的直线和中心锚点通常很难看。
+6. **所有 text/title/subtitle 支持 markdown 增强语法。** `**粗体**`、`*斜体*`、`<color=#HEX>文字</color>`、`<size=N>文字</size>`。
+7. **次要文本自动截断。** 为了防止长文本破坏布局，`subtitle` 和 `entries` 中的文本超过一定长度（60-80字）会自动截断并显示 `...`。
+8. **约束优先。** 模板层节点默认使用 `fill-container`（受 `maxWidth` 限制）或 `fit-content` 以保证布局自动平衡，优先保证图表比例协调。
 
 ---
 
@@ -770,3 +771,4 @@ console.log(JSON.stringify(doc, null, 2));
 | Connector 报找不到节点 | from/to 引用的 id 不存在 | 检查节点是否设置了对应 id |
 | 主题颜色没生效 | `setTheme()` 调用在组件构建之后 | 在文件最上方调用 `setTheme()` |
 | Badge 不在卡片里 | Badge 放在 Card 的 children 里 | `Card({ ..., children: [Badge({ text: 'v1' })] })` |
+| 连线像蜘蛛网一样乱穿 | 未指定连线形状和锚点，系统使用了默认的中心点直线连接 | 在 `Connector` 中显式指定 `lineShape: 'rightAngle'` (或 `curve`) 以及明确的 `fromAnchor` 和 `toAnchor`（如 `bottom` 和 `top`） |
