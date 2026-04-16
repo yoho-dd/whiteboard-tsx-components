@@ -9,9 +9,11 @@ import { renderWithWhiteboardCli } from './lib/whiteboard-cli.js';
 const rootDir = fileURLToPath(new URL('..', import.meta.url));
 const playbookDir = path.join(rootDir, 'playbook');
 const storiesDir = path.join(playbookDir, 'stories');
+const clientDir = path.join(playbookDir, 'client');
 const distDir = path.join(playbookDir, 'dist');
 const outDir = path.join(distDir, 'out');
 const vendorDir = path.join(distDir, 'vendor');
+const assetsDir = path.join(distDir, 'assets');
 const monacoSourceDir = path.join(rootDir, 'node_modules', 'monaco-editor', 'min', 'vs');
 const monacoDistDir = path.join(vendorDir, 'monaco', 'vs');
 
@@ -24,7 +26,9 @@ export async function buildPlaybook(): Promise<BuildResult> {
   await ensureDir(distDir);
   await ensureDir(outDir);
   await ensureDir(vendorDir);
+  await ensureDir(assetsDir);
   await fs.cp(monacoSourceDir, monacoDistDir, { recursive: true });
+  await fs.cp(clientDir, assetsDir, { recursive: true });
 
   const stories = await loadStories(storiesDir);
   const buildNonce = new Date().toISOString();

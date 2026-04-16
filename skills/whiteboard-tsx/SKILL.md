@@ -79,6 +79,8 @@ whiteboard-cli -i diagram.json -o diagram.png
 3. **Connector 的 from/to 必须是已存在的 id。** 每个需要被连线引用的节点必须设置 `id`。
 4. **Connector 可以写在任意位置，会自动提升到顶层。** 不需要手动放到最外层。
 5. **所有 text/title/subtitle 支持 markdown 增强语法。** `**粗体**`、`*斜体*`、`<color=#HEX>文字</color>`、`<size=N>文字</size>`。
+6. **次要文本自动截断。** 为了防止长文本破坏布局，`subtitle` 和 `entries` 中的文本超过一定长度（60-80字）会自动截断并显示 `...`。
+7. **约束优先。** 模板层节点默认宽度为 `260`，复合组件（Card）默认带 `maxWidth`，优先保证图表比例协调。
 
 ---
 
@@ -106,6 +108,9 @@ whiteboard-cli -i diagram.json -o diagram.png
 | id | string | — | 节点 ID |
 | width | WBSizeValue | `'fill-container'` | 宽度 |
 | height | WBSizeValue | `'fit-content'` | 高度 |
+| flex | number | — | 弹性权重（如 1） |
+| maxWidth | number \| string | — | 最大宽度 |
+| minWidth | number \| string | — | 最小宽度 |
 | gap | number | `16` (spacing.md) | 子元素间距 |
 | padding | number \| [v,h] \| [t,r,b,l] | — | 内边距 |
 | alignItems | `'start'\|'center'\|'end'\|'stretch'` | — | 交叉轴对齐 |
@@ -219,7 +224,7 @@ SVG 代码（禁止 `<text>`/`<image>` 标签）或图片 URL。
 | title | string | — | **必填**，支持 markdown |
 | subtitle | string | — | 副标题，支持 markdown |
 | colorGroup | `'blue'\|'purple'\|'green'\|'yellow'\|'red'` | 继承自 Section | 配色组 |
-| width | WBSizeValue | `'fill-container(200)'` | 宽度 |
+| width | WBSizeValue | `'fill-container'` | 宽度 (默认 maxWidth: 360) |
 | children | 组件 | — | 附加内容（如 Badge） |
 | fillColor / borderColor | string | colorGroup 决定 | 可覆盖 |
 
@@ -304,7 +309,7 @@ Label-Outside 模式，左侧固定宽度标签 + 右侧填满内容。架构图
 | children | 组件 | — | 主体区域的任意子组件 |
 | footer | 组件 | — | 尾部内容（如 Badge） |
 | colorGroup | ColorGroupName | — | 配色组 |
-| width | WBSizeValue | `'fill-container(200)'` | 宽度 |
+| width | WBSizeValue | `'fill-container'` | 宽度 (默认 maxWidth: 360) |
 
 生成结构：`frame(vertical)` → header(icon+title) + divider(rect h=1) + entries(key-value rows) + children + footer
 
@@ -615,9 +620,9 @@ Figure({
 | `number` (如 1200) | 固定像素 |
 | `'fit-content'` | 根据内容自动计算 |
 | `'fill-container'` | 填满父容器剩余空间 |
-| `'fill-container(200)'` | 填满，但父容器无 flex 时降级为 200px |
+| `'fill-container'` | 填满父容器剩余空间（Card/DetailCard 默认带 maxWidth 约束） |
 
-**宽度链规则：** 根 VStack 设固定 width → 子 Section 用 fill-container → 子 HStack 用 fill-container（默认值）→ Card 用 fill-container(200)。链条断了就会塌缩到 0。
+**宽度链规则：** 根 VStack 设固定 width → 子 Section 用 fill-container → 子 HStack 用 fill-container（默认值）→ Card 用 fill-container。内层组件宽度不再依赖 legacy 的 fallback 语法。
 
 ---
 

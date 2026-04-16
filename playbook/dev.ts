@@ -7,7 +7,12 @@ import { fileURLToPath } from 'node:url';
 const rootDir = fileURLToPath(new URL('..', import.meta.url));
 const playbookDir = path.join(rootDir, 'playbook');
 const distDir = path.join(playbookDir, 'dist');
-const watchRoots = [path.join(rootDir, 'src'), path.join(playbookDir, 'stories')];
+const watchRoots = [
+  path.join(rootDir, 'src'),
+  path.join(playbookDir, 'stories'),
+  path.join(playbookDir, 'lib'),
+  path.join(playbookDir, 'client'),
+];
 const port = Number(process.env.PLAYBOOK_PORT || 4321);
 
 const clients = new Set<http.ServerResponse>();
