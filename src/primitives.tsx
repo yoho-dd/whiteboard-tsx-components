@@ -50,14 +50,31 @@ function flattenChildren(children: unknown): WBNode[] {
 function liftConnectors(nodes: WBNode[]): { topLevel: WBNode[]; connectors: WBNode[] } {
   const topLevel: WBNode[] = [];
   const connectors: WBNode[] = [];
+  const seenIds = new Set<string>();
 
   for (const node of nodes) {
     if (isConnector(node)) {
-      connectors.push(node);
+      if (node.id) {
+        if (!seenIds.has(node.id)) {
+          seenIds.add(node.id);
+          connectors.push(node);
+        }
+      } else {
+        connectors.push(node);
+      }
     } else {
       if (hasChildren(node) && node.children) {
         const lifted = liftConnectors(node.children as WBNode[]);
-        connectors.push(...lifted.connectors);
+        for (const connector of lifted.connectors) {
+          if (connector.id) {
+            if (!seenIds.has(connector.id)) {
+              seenIds.add(connector.id);
+              connectors.push(connector);
+            }
+          } else {
+            connectors.push(connector);
+          }
+        }
         topLevel.push({ ...node, children: lifted.topLevel } as WBNode);
       } else {
         topLevel.push(node);

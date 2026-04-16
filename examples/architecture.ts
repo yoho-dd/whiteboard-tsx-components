@@ -88,33 +88,33 @@ const doc = Whiteboard({
     }),
 
     // ── 主链路：CDN → 网关 ──
-    Connector({ id: 'c-cdn-gw', from: 'cdn', to: 'gateway', variant: 'main', endArrow: 'arrow' }),
+    Connector({ id: 'c-cdn-gw', from: 'cdn', to: 'gateway', variant: 'main', endArrow: 'arrow', lineShape: 'rightAngle' }),
 
     // ── 网关 → 业务服务（主链路）──
-    Connector({ id: 'c-gw-order', from: 'gateway', to: 'order-svc', variant: 'main', endArrow: 'arrow' }),
-    Connector({ id: 'c-gw-inv', from: 'gateway', to: 'inventory-svc', variant: 'main', endArrow: 'arrow' }),
-    Connector({ id: 'c-gw-pay', from: 'gateway', to: 'payment-svc', variant: 'main', endArrow: 'arrow' }),
-    Connector({ id: 'c-gw-user', from: 'gateway', to: 'user-svc', variant: 'main', endArrow: 'arrow' }),
+    Connector({ id: 'c-gw-order', from: 'gateway', to: 'order-svc', variant: 'main', endArrow: 'arrow', lineShape: 'rightAngle' }),
+    Connector({ id: 'c-gw-inv', from: 'gateway', to: 'inventory-svc', variant: 'main', endArrow: 'arrow', lineShape: 'rightAngle' }),
+    Connector({ id: 'c-gw-pay', from: 'gateway', to: 'payment-svc', variant: 'main', endArrow: 'arrow', lineShape: 'rightAngle' }),
+    Connector({ id: 'c-gw-user', from: 'gateway', to: 'user-svc', variant: 'main', endArrow: 'arrow', lineShape: 'rightAngle' }),
 
     // ── 业务服务 → 数据层 ──
     // 订单服务
-    Connector({ id: 'c-order-mysql', from: 'order-svc', to: 'mysql', endArrow: 'arrow' }),
-    Connector({ id: 'c-order-redis', from: 'order-svc', to: 'redis', endArrow: 'arrow' }),
-    Connector({ id: 'c-order-kafka', from: 'order-svc', to: 'kafka', variant: 'async', endArrow: 'arrow', label: '发布事件' }),
+    Connector({ id: 'c-order-mysql', from: 'order-svc', to: 'mysql', endArrow: 'arrow', lineShape: 'rightAngle' }),
+    Connector({ id: 'c-order-redis', from: 'order-svc', to: 'redis', endArrow: 'arrow', lineShape: 'rightAngle' }),
+    Connector({ id: 'c-order-kafka', from: 'order-svc', to: 'kafka', variant: 'async', endArrow: 'arrow', label: '发布事件', lineShape: 'rightAngle' }),
 
     // 库存服务
-    Connector({ id: 'c-inv-mysql', from: 'inventory-svc', to: 'mysql', endArrow: 'arrow' }),
-    Connector({ id: 'c-inv-redis', from: 'inventory-svc', to: 'redis', endArrow: 'arrow' }),
+    Connector({ id: 'c-inv-mysql', from: 'inventory-svc', to: 'mysql', endArrow: 'arrow', lineShape: 'rightAngle' }),
+    Connector({ id: 'c-inv-redis', from: 'inventory-svc', to: 'redis', endArrow: 'arrow', lineShape: 'rightAngle' }),
 
     // 支付服务
-    Connector({ id: 'c-pay-mysql', from: 'payment-svc', to: 'mysql', endArrow: 'arrow' }),
+    Connector({ id: 'c-pay-mysql', from: 'payment-svc', to: 'mysql', endArrow: 'arrow', lineShape: 'rightAngle' }),
 
     // 用户服务
-    Connector({ id: 'c-user-mysql', from: 'user-svc', to: 'mysql', endArrow: 'arrow' }),
-    Connector({ id: 'c-user-redis', from: 'user-svc', to: 'redis', endArrow: 'arrow' }),
+    Connector({ id: 'c-user-mysql', from: 'user-svc', to: 'mysql', endArrow: 'arrow', lineShape: 'rightAngle' }),
+    Connector({ id: 'c-user-redis', from: 'user-svc', to: 'redis', endArrow: 'arrow', lineShape: 'rightAngle' }),
 
     // Kafka → 库存服务（消费消息，双向场景）
-    Connector({ id: 'c-kafka-inv', from: 'kafka', to: 'inventory-svc', variant: 'async', endArrow: 'arrow', label: '消费事件' }),
+    Connector({ id: 'c-kafka-inv', from: 'kafka', to: 'inventory-svc', variant: 'async', endArrow: 'arrow', label: '消费事件', lineShape: 'rightAngle' }),
   ],
 });
 

@@ -150,7 +150,7 @@ describe('Whiteboard', () => {
     });
   });
 
-  it('lifts connectors to top level', () => {
+  it('lifts connectors to top level and deduplicates them', () => {
     const doc = Whiteboard({
       children: [
         {
@@ -160,16 +160,21 @@ describe('Whiteboard', () => {
           children: [
             { type: 'rect', id: 'r1', width: 100, height: 50 },
             { type: 'connector', id: 'c1', connector: { from: 'r1', to: 'r2' } },
+            // Duplicate connector with same ID inside the frame
+            { type: 'connector', id: 'c1', connector: { from: 'r1', to: 'r2' } },
           ],
         },
         { type: 'rect', id: 'r2', width: 100, height: 50 },
+        // Another duplicate connector with same ID outside the frame
+        { type: 'connector', id: 'c1', connector: { from: 'r1', to: 'r2' } },
       ],
     });
 
     // Connector should be at top level, not inside frame
+    // And there should only be 1 connector (c1) due to deduplication
     expect(doc.nodes).toHaveLength(3);
     const types = doc.nodes.map((n: any) => n.type);
-    expect(types).toContain('connector');
+    expect(types.filter((t) => t === 'connector')).toHaveLength(1);
 
     // Frame should not have connector in children
     const frame = doc.nodes.find((n: any) => n.type === 'frame') as any;

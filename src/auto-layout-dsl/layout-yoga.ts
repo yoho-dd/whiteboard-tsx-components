@@ -60,7 +60,22 @@ export function liftConnectors(doc: WBDocument): WBDocument {
     return n;
   });
 
-  return { ...doc, nodes: [...cleanNodes, ...lifted] };
+  // Deduplicate connectors by id
+  const uniqueLifted: WBConnectorNode[] = [];
+  const seenIds = new Set<string>();
+
+  for (const c of lifted) {
+    if (c.id) {
+      if (!seenIds.has(c.id)) {
+        seenIds.add(c.id);
+        uniqueLifted.push(c);
+      }
+    } else {
+      uniqueLifted.push(c);
+    }
+  }
+
+  return { ...doc, nodes: [...cleanNodes, ...uniqueLifted] };
 }
 
 // ─── flattenResolved (same as layout.ts) ──────────────────────────────────────
