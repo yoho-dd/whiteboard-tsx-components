@@ -32,7 +32,7 @@ import type {
 } from './types.js';
 import type { WBNode } from './auto-layout-dsl/types.js';
 
-const DEFAULT_TEMPLATE_NODE_WIDTH = 260;
+const FALLBACK_NODE_WIDTH = 260;
 
 function clean<T extends Record<string, unknown>>(obj: T): T {
   const result: Record<string, unknown> = {};
@@ -51,10 +51,10 @@ function isFillContainerValue(value: unknown): boolean {
   return typeof value === 'string' && value.startsWith('fill-container');
 }
 
-function resolveTemplateNodeWidth(nodeWidth: unknown, shellWidth: unknown = undefined): unknown {
+function resolveTemplateNodeWidth(nodeWidth: unknown, shellWidth: unknown = undefined, defaultWidth: any = FALLBACK_NODE_WIDTH): unknown {
   if (nodeWidth !== undefined) return nodeWidth;
-  if (isFillContainerValue(shellWidth)) return DEFAULT_TEMPLATE_NODE_WIDTH;
-  return shellWidth ?? DEFAULT_TEMPLATE_NODE_WIDTH;
+  if (isFillContainerValue(shellWidth)) return defaultWidth;
+  return shellWidth ?? defaultWidth;
 }
 
 function makeTemplateTitle(id: string, title: string): WBNode {
@@ -68,13 +68,13 @@ function makeTemplateTitle(id: string, title: string): WBNode {
   });
 }
 
-function appendChildrenToShell(shell: WBNode, children: WBNode[], node: TemplateNodeBase): WBNode {
+function appendChildrenToShell(shell: WBNode, children: WBNode[], node: TemplateNodeBase, defaultWidth: any = FALLBACK_NODE_WIDTH): WBNode {
   if ((shell as any).type === 'frame') {
     const existing = Array.isArray((shell as any).children) ? (shell as any).children : [];
     return clean({
       ...(shell as any),
       id: node.id ?? (shell as any).id,
-      width: resolveTemplateNodeWidth(node.width, (shell as any).width),
+      width: resolveTemplateNodeWidth(node.width, (shell as any).width, defaultWidth),
       height: node.height ?? (shell as any).height,
       children: children.length > 0 ? [...existing, ...children] : existing,
     }) as WBNode;
@@ -90,7 +90,7 @@ function appendChildrenToShell(shell: WBNode, children: WBNode[], node: Template
   return Frame({
     id: node.id,
     layout: 'vertical',
-    width: resolveTemplateNodeWidth(node.width),
+    width: resolveTemplateNodeWidth(node.width, undefined, defaultWidth),
     height: 'fit-content',
     gap: spacing.sm,
     children: [shell, ...children],
@@ -102,7 +102,7 @@ function normalizeShapeSpec(shape: TemplateNodeBase['shape']): TemplateShapeSpec
   return shape ?? { type: 'rect' };
 }
 
-function renderShapeNode(node: TemplateNodeBase, contentChildren: WBNode[]): WBNode {
+function renderShapeNode(node: TemplateNodeBase, contentChildren: WBNode[], defaultWidth: any = FALLBACK_NODE_WIDTH): WBNode {
   if (contentChildren.length > 0) {
     throw new Error(
       `Template node "${node.id}" uses shape "${normalizeShapeSpec(node.shape).type}" with nested content. Shapes are leaf nodes; use Frame/Card as the node shell and keep the shape as a leaf child instead.`,
@@ -115,7 +115,7 @@ function renderShapeNode(node: TemplateNodeBase, contentChildren: WBNode[]): WBN
   const shapeProps = clean({
     ...spec,
     id: node.id,
-    width: resolveTemplateNodeWidth(node.width, spec.width),
+    width: resolveTemplateNodeWidth(node.width, spec.width, defaultWidth),
     height: node.height ?? spec.height ?? 'fit-content',
     text: node.title,
     fontSize: spec.fontSize ?? (node.subtitle ? typography.h3.fontSize : undefined),
@@ -133,24 +133,24 @@ function renderShapeNode(node: TemplateNodeBase, contentChildren: WBNode[]): WBN
   return shapeFactory[type](shapeProps);
 }
 
-function renderTemplateNode(node: TemplateNodeBase): WBNode {
+function renderTemplateNode(node: TemplateNodeBase, defaultWidth: any = FALLBACK_NODE_WIDTH): WBNode {
   const componentChildren = flattenChildren(node.component);
   const slotChildren = flattenChildren(node.children);
   const nestedChildren = [...componentChildren, ...slotChildren];
 
   if (node.shape) {
-    return renderShapeNode(node, nestedChildren);
+    return renderShapeNode(node, nestedChildren, defaultWidth);
   }
 
   if (componentChildren.length > 0) {
     if (componentChildren.length === 1) {
-      return appendChildrenToShell(componentChildren[0], slotChildren, node);
+      return appendChildrenToShell(componentChildren[0], slotChildren, node, defaultWidth);
     }
 
     return Frame({
       id: node.id,
       layout: 'vertical',
-      width: resolveTemplateNodeWidth(node.width),
+      width: resolveTemplateNodeWidth(node.width, undefined, defaultWidth),
       height: node.height ?? 'fit-content',
       gap: spacing.sm,
       children: [...componentChildren, ...slotChildren],
@@ -163,7 +163,7 @@ function renderTemplateNode(node: TemplateNodeBase): WBNode {
       title: node.title ?? node.id,
       subtitle: node.subtitle,
       colorGroup: node.colorGroup,
-      width: resolveTemplateNodeWidth(node.width),
+      width: resolveTemplateNodeWidth(node.width, undefined, defaultWidth) as any,
       height: node.height,
       children: slotChildren.length > 0 ? slotChildren : undefined,
     });
@@ -172,7 +172,7 @@ function renderTemplateNode(node: TemplateNodeBase): WBNode {
   return Frame({
     id: node.id,
     layout: 'vertical',
-    width: resolveTemplateNodeWidth(node.width),
+    width: resolveTemplateNodeWidth(node.width, undefined, defaultWidth) as any,
     height: node.height ?? 'fit-content',
     gap: spacing.sm,
     padding: [spacing.sm, spacing.sm],
@@ -202,7 +202,7 @@ export function ArchitectureTemplate(props: ArchitectureTemplateProps): WBNode {
   }
 
   children.push(...layers.map((layer, index) => {
-    const layerNodes = layer.nodes.map(renderTemplateNode);
+    const layerNodes = layer.nodes.map((node) => renderTemplateNode(node, 'fill-container'));
     const direction = layer.direction ?? 'horizontal';
     const content = direction === 'vertical'
         ? VStack({
@@ -252,7 +252,7 @@ function flattenOrgTree(
   parentId?: string,
 ): void {
   for (const node of nodes) {
-    collector.nodes.push(renderTemplateNode(node));
+    collector.nodes.push(renderTemplateNode(node, 'fit-content'));
     if (parentId) collector.edges.push([parentId, node.id]);
     if (node.childrenNodes?.length) {
       flattenOrgTree(node.childrenNodes, collector, node.id);
@@ -316,7 +316,7 @@ export function SwimlaneTemplate(props: SwimlaneTemplateProps): WBNode {
     alignItems: 'stretch',
     children: lanes.map((lane) => {
       const direction = lane.direction ?? 'vertical';
-      const stepChildren = lane.steps.map(renderTemplateNode);
+      const stepChildren = lane.steps.map((step) => renderTemplateNode(step, 'fill-container'));
       const laneBody = direction === 'horizontal'
         ? HStack({
             id: `${lane.id}-body`,
@@ -361,7 +361,7 @@ function renderComparisonColumn(column: ComparisonTemplateColumn): WBNode {
       id: `${column.id}-content`,
       title: undefined,
       subtitle: undefined,
-    }));
+    }, 'fill-container'));
   }
 
   bodyChildren.push(...flattenChildren(column.items));
@@ -432,7 +432,7 @@ export function FlowchartTemplate(props: FlowchartTemplateProps): WBNode {
     nodesep,
     edgesep,
     ranksep,
-    children: nodes.map((node: FlowchartTemplateNode) => renderTemplateNode(node)),
+    children: nodes.map((node: FlowchartTemplateNode) => renderTemplateNode(node, 'fit-content')),
   }));
 
   return VStack({
