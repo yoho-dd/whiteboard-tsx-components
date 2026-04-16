@@ -105,7 +105,7 @@ function normalizeShapeSpec(shape: TemplateNodeBase['shape']): TemplateShapeSpec
 function renderShapeNode(node: TemplateNodeBase, contentChildren: WBNode[]): WBNode {
   if (contentChildren.length > 0) {
     throw new Error(
-      `Template node "${node.id}" uses shape "${normalizeShapeSpec(node.shape).type}" with nested children. Shapes are leaf nodes; use a Frame/Card component shell instead.`,
+      `Template node "${node.id}" uses shape "${normalizeShapeSpec(node.shape).type}" with nested content. Shapes are leaf nodes; use Frame/Card as the node shell and keep the shape as a leaf child instead.`,
     );
   }
 

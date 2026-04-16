@@ -12,7 +12,7 @@ import type {
   WBDagreLayoutOptions,
   StickyNoteFillColor,
 } from './auto-layout-dsl/types.js';
-import type { ThemeName, ColorGroupName, ConnectorVariant, ColorGroup } from './theme.js';
+import type { ThemeName, ColorGroupName, ConnectorVariant } from './theme.js';
 
 // ─── Children Type ──────────────────────────────────────────────────────────
 
@@ -492,8 +492,16 @@ export type TemplateShapeType =
   | 'cylinder'
   | 'trapezoid';
 
-export interface TemplateShapeSpec extends Omit<ShapeBaseProps, 'children'> {
-  /** Shape shell used to wrap nested content */
+export interface TemplateShapeSpec extends Omit<
+  ShapeBaseProps,
+  | 'children'
+  | 'contentLayout'
+  | 'contentGap'
+  | 'contentPadding'
+  | 'contentAlignItems'
+  | 'contentJustifyContent'
+> {
+  /** Visual configuration for a leaf shape node */
   type?: TemplateShapeType;
 }
 
@@ -508,7 +516,7 @@ export interface TemplateNodeBase {
   component?: ComponentChildren;
   /** Extra nested content rendered inside the chosen shell */
   children?: ComponentChildren;
-  /** Optional shape shell for the node */
+  /** Optional leaf shape renderer for the node; shapes cannot wrap nested content */
   shape?: TemplateShapeType | TemplateShapeSpec;
 }
 

@@ -1,6 +1,6 @@
 import type { PlaybookStory } from '../../types.js';
 import { setTheme, spacing } from '../../../src/theme.js';
-import { Whiteboard } from '../../../src/primitives.js';
+import { Diamond, Frame, Whiteboard } from '../../../src/primitives.js';
 import { BulletList, Callout, DetailCard } from '../../../src/composites.js';
 import { SwimlaneTemplate, FlowchartTemplate } from '../../../src/templates.js';
 
@@ -42,8 +42,16 @@ const story: PlaybookStory = {
               steps: [
                 {
                   id: 'ops-review',
-                  title: '人工审核',
-                  shape: 'diamond',
+                  component: Frame({
+                    id: 'ops-review-shell',
+                    layout: 'vertical',
+                    width: 'fit-content(220)',
+                    height: 'fit-content',
+                    gap: spacing.sm,
+                    children: [
+                      Diamond({ id: 'ops-review-decision', width: 180, height: 96, text: '人工审核' }),
+                    ],
+                  }),
                   children: [
                     Callout({ variant: 'warning', title: '异常订单', body: '命中高风险规则时升级复核。' }),
                   ],
@@ -57,29 +65,25 @@ const story: PlaybookStory = {
               steps: [
                 {
                   id: 'system-refund',
-                  title: '退款执行',
-                  shape: {
-                    type: 'rect',
-                    borderRadius: 12,
-                    fillColor: '#FFFFFF',
-                    borderColor: '#B8E0C2',
-                    borderWidth: 1,
-                    contentPadding: [spacing.sm, spacing.sm],
-                  },
-                  children: [
-                    FlowchartTemplate({
-                      id: 'refund-system-flow',
-                      title: '系统动作',
-                      width: 'fill-container',
-                      padding: [spacing.sm, spacing.sm],
-                      nodes: [
-                        { id: 'lock-order', title: '锁单' },
-                        { id: 'call-pay', title: '调用支付', shape: 'diamond' },
-                        { id: 'write-ledger', title: '记账' },
-                      ],
-                      edges: [['lock-order', 'call-pay'], ['call-pay', 'write-ledger']],
-                    }),
-                  ],
+                  component: DetailCard({
+                    id: 'system-refund-card',
+                    title: '退款执行',
+                    subtitle: '系统动作',
+                    children: [
+                      FlowchartTemplate({
+                        id: 'refund-system-flow',
+                        title: '系统动作',
+                        width: 'fill-container',
+                        padding: [spacing.sm, spacing.sm],
+                        nodes: [
+                          { id: 'lock-order', title: '锁单' },
+                          { id: 'call-pay', title: '调用支付', shape: 'diamond' },
+                          { id: 'write-ledger', title: '记账' },
+                        ],
+                        edges: [['lock-order', 'call-pay'], ['call-pay', 'write-ledger']],
+                      }),
+                    ],
+                  }),
                 },
               ],
             },

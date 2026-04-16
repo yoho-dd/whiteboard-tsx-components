@@ -49,30 +49,25 @@ const story: PlaybookStory = {
               nodes: [
                 {
                   id: 'trade-node',
-                  title: '交易域',
-                  subtitle: '订单 / 履约 / 结算',
-                  shape: {
-                    type: 'rect',
-                    fillColor: '#FFFFFF',
-                    borderColor: '#C8E6CF',
-                    borderWidth: 1,
-                    borderRadius: 12,
-                    contentPadding: [spacing.sm, spacing.sm],
-                  },
-                  children: [
-                    FlowchartTemplate({
-                      id: 'trade-flow',
-                      title: '交易主链路',
-                      width: 'fill-container',
-                      padding: [spacing.sm, spacing.sm],
-                      nodes: [
-                        { id: 'trade-req', title: '请求' },
-                        { id: 'trade-check', title: '校验', shape: 'diamond' },
-                        { id: 'trade-done', title: '下单成功' },
-                      ],
-                      edges: [['trade-req', 'trade-check'], ['trade-check', 'trade-done']],
-                    }),
-                  ],
+                  component: Card({
+                    id: 'trade-card',
+                    title: '交易域',
+                    subtitle: '订单 / 履约 / 结算',
+                    children: [
+                      FlowchartTemplate({
+                        id: 'trade-flow',
+                        title: '交易主链路',
+                        width: 'fill-container',
+                        padding: [spacing.sm, spacing.sm],
+                        nodes: [
+                          { id: 'trade-req', title: '请求' },
+                          { id: 'trade-check', title: '校验', shape: 'diamond' },
+                          { id: 'trade-done', title: '下单成功' },
+                        ],
+                        edges: [['trade-req', 'trade-check'], ['trade-check', 'trade-done']],
+                      }),
+                    ],
+                  }),
                 },
                 {
                   id: 'member-node',

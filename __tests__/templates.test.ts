@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import { Card, BulletList, Callout } from '../src/composites.js';
+import { Diamond, Frame } from '../src/primitives.js';
 import { setTheme } from '../src/theme.js';
 import {
   ArchitectureTemplate,
@@ -182,5 +183,35 @@ describe('Template layer', () => {
       ],
       edges: [],
     })).toThrow(/shapes are leaf nodes/i);
+  });
+
+  it('allows frame shells to compose leaf shapes with nested helper content', () => {
+    const node = FlowchartTemplate({
+      id: 'flowchart-template',
+      nodes: [
+        {
+          id: 'review',
+          component: Frame({
+            id: 'review-shell',
+            layout: 'vertical',
+            width: 'fit-content(220)',
+            height: 'fit-content',
+            children: [
+              Diamond({ id: 'review-decision', width: 180, height: 96, text: 'Review?' }),
+            ],
+          }),
+          children: [Callout({ title: 'Note', body: 'Escalate risky changes.' })],
+        },
+      ],
+      edges: [],
+    }) as any;
+
+    const graph = node.children[0];
+    const reviewNode = graph.children[0];
+    expect(reviewNode.id).toBe('review');
+    expect(reviewNode.type).toBe('frame');
+    expect(reviewNode.children).toHaveLength(2);
+    expect(reviewNode.children[0].id).toBe('review-decision');
+    expect(reviewNode.children[0].type).toBe('diamond');
   });
 });
