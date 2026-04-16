@@ -16,7 +16,7 @@ const story: PlaybookStory = {
       children: [
         DagreGraph({
           id: 'dagre-root',
-          width: 1100,
+          width: 'fit-content',
           height: 'fit-content',
           rankdir: 'LR',
           nodesep: 56,

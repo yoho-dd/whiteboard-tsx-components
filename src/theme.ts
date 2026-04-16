@@ -28,6 +28,8 @@ export type ColorGroupName = 'blue' | 'purple' | 'green' | 'yellow' | 'red';
 
 export interface Theme {
   name: string;
+  /** Surface color for the diagram background */
+  canvas: string;
   groups: Record<ColorGroupName, ColorGroup>;
   text: {
     primary: string;
@@ -52,6 +54,7 @@ export type ThemeName = 'classic' | 'business' | 'tech' | 'fresh' | 'minimalist'
 
 const classic: Theme = {
   name: 'classic',
+  canvas: '#FFFFFF',
   groups: {
     blue:   { bg: '#F0F4FC', fill: '#FFFFFF', border: '#5178C6', softBorder: '#C2D3EE', text: '#1F2329', badgeBg: '#F0F4FC' },
     purple: { bg: '#EAE2FE', fill: '#FFFFFF', border: '#8569CB', softBorder: '#CFC4E6', text: '#1F2329', badgeBg: '#F3F0FA' },
@@ -66,58 +69,62 @@ const classic: Theme = {
 
 const business: Theme = {
   name: 'business',
+  canvas: '#F7FAFC',
   groups: {
-    blue:   { bg: '#EDF2F7', fill: '#FFFFFF', border: '#4A6FA5', softBorder: '#B0C4DE', text: '#1A202C', badgeBg: '#EDF2F7' },
-    purple: { bg: '#E8EDF3', fill: '#FFFFFF', border: '#5A7B9A', softBorder: '#A8BDD4', text: '#1A202C', badgeBg: '#E8EDF3' },
-    green:  { bg: '#E8EDF3', fill: '#FFFFFF', border: '#5A7B9A', softBorder: '#A8BDD4', text: '#1A202C', badgeBg: '#E8EDF3' },
-    yellow: { bg: '#F0F0F0', fill: '#FFFFFF', border: '#8895A7', softBorder: '#C0C8D4', text: '#1A202C', badgeBg: '#F0F0F0' },
-    red:    { bg: '#EDF2F7', fill: '#FFFFFF', border: '#4A6FA5', softBorder: '#B0C4DE', text: '#1A202C', badgeBg: '#EDF2F7' },
+    blue:   { bg: '#EBF8FF', fill: '#FFFFFF', border: '#3182CE', softBorder: '#BEE3F8', text: '#2A4365', badgeBg: '#EBF8FF' },
+    purple: { bg: '#FAF5FF', fill: '#FFFFFF', border: '#805AD5', softBorder: '#E9D8FD', text: '#44337A', badgeBg: '#FAF5FF' },
+    green:  { bg: '#F0FFF4', fill: '#FFFFFF', border: '#38A169', softBorder: '#C6F6D5', text: '#22543D', badgeBg: '#F0FFF4' },
+    yellow: { bg: '#FFFFF0', fill: '#FFFFFF', border: '#D69E2E', softBorder: '#FEFCBF', text: '#744210', badgeBg: '#FFFFF0' },
+    red:    { bg: '#FFF5F5', fill: '#FFFFFF', border: '#E53E3E', softBorder: '#FED7D7', text: '#742A2A', badgeBg: '#FFF5F5' },
   },
   text: { primary: '#1A202C', secondary: '#4A5568', meta: '#718096', white: '#FFFFFF' },
-  emphasis: { fill: '#2D4A7A', border: '#2D4A7A', text: '#FFFFFF' },
-  connector: { color: '#718BAE', width: 1.5 },
+  emphasis: { fill: '#2B6CB0', border: '#2B6CB0', text: '#FFFFFF' },
+  connector: { color: '#A0AEC0', width: 1.5 },
 };
 
 const tech: Theme = {
   name: 'tech',
+  canvas: '#0F172A',
   groups: {
-    blue:   { bg: '#1E293B', fill: '#1E293B', border: '#3B82F6', softBorder: '#334155', text: '#E2E8F0', badgeBg: '#0F172A' },
-    purple: { bg: '#1E293B', fill: '#1E293B', border: '#8B5CF6', softBorder: '#334155', text: '#E2E8F0', badgeBg: '#0F172A' },
-    green:  { bg: '#1E293B', fill: '#1E293B', border: '#10B981', softBorder: '#334155', text: '#E2E8F0', badgeBg: '#0F172A' },
-    yellow: { bg: '#1E293B', fill: '#1E293B', border: '#F59E0B', softBorder: '#334155', text: '#E2E8F0', badgeBg: '#0F172A' },
-    red:    { bg: '#1E293B', fill: '#1E293B', border: '#EF4444', softBorder: '#334155', text: '#E2E8F0', badgeBg: '#0F172A' },
+    blue:   { bg: '#1E293B', fill: '#334155', border: '#3B82F6', softBorder: '#475569', text: '#E2E8F0', badgeBg: '#1E293B' },
+    purple: { bg: '#1E293B', fill: '#334155', border: '#8B5CF6', softBorder: '#475569', text: '#E2E8F0', badgeBg: '#1E293B' },
+    green:  { bg: '#1E293B', fill: '#334155', border: '#10B981', softBorder: '#475569', text: '#E2E8F0', badgeBg: '#1E293B' },
+    yellow: { bg: '#1E293B', fill: '#334155', border: '#F59E0B', softBorder: '#475569', text: '#E2E8F0', badgeBg: '#1E293B' },
+    red:    { bg: '#1E293B', fill: '#334155', border: '#EF4444', softBorder: '#475569', text: '#E2E8F0', badgeBg: '#1E293B' },
   },
-  text: { primary: '#E2E8F0', secondary: '#94A3B8', meta: '#64748B', white: '#FFFFFF' },
-  emphasis: { fill: '#2563EB', border: '#3B82F6', text: '#FFFFFF' },
+  text: { primary: '#F8FAFC', secondary: '#94A3B8', meta: '#64748B', white: '#FFFFFF' },
+  emphasis: { fill: '#3B82F6', border: '#60A5FA', text: '#FFFFFF' },
   connector: { color: '#475569', width: 1.5 },
 };
 
 const fresh: Theme = {
   name: 'fresh',
+  canvas: '#FFFFFF',
   groups: {
-    blue:   { bg: '#ECFDF5', fill: '#FFFFFF', border: '#6EE7B7', softBorder: '#A7F3D0', text: '#14532D', badgeBg: '#ECFDF5' },
-    purple: { bg: '#F0FDFA', fill: '#FFFFFF', border: '#5EEAD4', softBorder: '#99F6E4', text: '#134E4A', badgeBg: '#F0FDFA' },
-    green:  { bg: '#F0FDF4', fill: '#FFFFFF', border: '#86EFAC', softBorder: '#BBF7D0', text: '#14532D', badgeBg: '#F0FDF4' },
-    yellow: { bg: '#DCFCE7', fill: '#FFFFFF', border: '#4ADE80', softBorder: '#86EFAC', text: '#14532D', badgeBg: '#DCFCE7' },
-    red:    { bg: '#ECFDF5', fill: '#FFFFFF', border: '#6EE7B7', softBorder: '#A7F3D0', text: '#14532D', badgeBg: '#ECFDF5' },
+    blue:   { bg: '#E0F2FE', fill: '#FFFFFF', border: '#38BDF8', softBorder: '#BAE6FD', text: '#0C4A6E', badgeBg: '#E0F2FE' },
+    purple: { bg: '#F3E8FF', fill: '#FFFFFF', border: '#C084FC', softBorder: '#E9D5FF', text: '#3B0764', badgeBg: '#F3E8FF' },
+    green:  { bg: '#DCFCE7', fill: '#FFFFFF', border: '#4ADE80', softBorder: '#BBF7D0', text: '#14532D', badgeBg: '#DCFCE7' },
+    yellow: { bg: '#FEF9C3', fill: '#FFFFFF', border: '#FACC15', softBorder: '#FEF08A', text: '#713F12', badgeBg: '#FEF9C3' },
+    red:    { bg: '#FEE2E2', fill: '#FFFFFF', border: '#F87171', softBorder: '#FECACA', text: '#7F1D1D', badgeBg: '#FEE2E2' },
   },
-  text: { primary: '#14532D', secondary: '#166534', meta: '#15803D', white: '#FFFFFF' },
-  emphasis: { fill: '#16A34A', border: '#16A34A', text: '#FFFFFF' },
-  connector: { color: '#86EFAC', width: 1.5 },
+  text: { primary: '#0F172A', secondary: '#475569', meta: '#64748B', white: '#FFFFFF' },
+  emphasis: { fill: '#10B981', border: '#10B981', text: '#FFFFFF' },
+  connector: { color: '#94A3B8', width: 1.5 },
 };
 
 const minimalist: Theme = {
   name: 'minimalist',
+  canvas: '#FFFFFF',
   groups: {
-    blue:   { bg: '#F8F9FA', fill: '#FFFFFF', border: '#DEE2E6', softBorder: '#E9ECEF', text: '#212529', badgeBg: '#F8F9FA' },
-    purple: { bg: '#E9ECEF', fill: '#FFFFFF', border: '#ADB5BD', softBorder: '#CED4DA', text: '#212529', badgeBg: '#E9ECEF' },
-    green:  { bg: '#F1F3F5', fill: '#FFFFFF', border: '#868E96', softBorder: '#ADB5BD', text: '#212529', badgeBg: '#F1F3F5' },
-    yellow: { bg: '#F8F9FA', fill: '#FFFFFF', border: '#ADB5BD', softBorder: '#CED4DA', text: '#212529', badgeBg: '#F8F9FA' },
-    red:    { bg: '#F8F9FA', fill: '#FFFFFF', border: '#CED4DA', softBorder: '#DEE2E6', text: '#212529', badgeBg: '#F8F9FA' },
+    blue:   { bg: '#F8F9FA', fill: '#FFFFFF', border: '#4DABF7', softBorder: '#D0EBFF', text: '#212529', badgeBg: '#E7F5FF' },
+    purple: { bg: '#F8F9FA', fill: '#FFFFFF', border: '#B197FC', softBorder: '#E5DBFF', text: '#212529', badgeBg: '#F3F0FF' },
+    green:  { bg: '#F8F9FA', fill: '#FFFFFF', border: '#69DB7C', softBorder: '#D3F9D8', text: '#212529', badgeBg: '#EBFBEE' },
+    yellow: { bg: '#F8F9FA', fill: '#FFFFFF', border: '#FFD43B', softBorder: '#FFF3BF', text: '#212529', badgeBg: '#FFF9DB' },
+    red:    { bg: '#F8F9FA', fill: '#FFFFFF', border: '#FF8787', softBorder: '#FFE3E3', text: '#212529', badgeBg: '#FFF5F5' },
   },
   text: { primary: '#212529', secondary: '#495057', meta: '#868E96', white: '#FFFFFF' },
-  emphasis: { fill: '#495057', border: '#495057', text: '#FFFFFF' },
-  connector: { color: '#ADB5BD', width: 1.5 },
+  emphasis: { fill: '#343A40', border: '#343A40', text: '#FFFFFF' },
+  connector: { color: '#CED4DA', width: 1.5 },
 };
 
 export const themes: Record<ThemeName, Theme> = { classic, business, tech, fresh, minimalist };
