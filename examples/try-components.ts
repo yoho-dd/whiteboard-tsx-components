@@ -136,12 +136,12 @@ const doc = Whiteboard({
     }),
 
     // Connectors
-    Connector({ id: 'c1', from: 'nginx', to: 'api', variant: 'main' }),
-    Connector({ id: 'c2', from: 'api', to: 'user-svc' }),
-    Connector({ id: 'c3', from: 'api', to: 'order-svc' }),
-    Connector({ id: 'c4', from: 'api', to: 'pay-svc' }),
-    Connector({ id: 'c5', from: 'user-svc', to: 'pg', variant: 'main' }),
-    Connector({ id: 'c6', from: 'order-svc', to: 'redis', variant: 'async', label: 'cache' }),
+    Connector({ id: 'c1', from: 'nginx', to: 'api', variant: 'main', lineShape: 'rightAngle' }),
+    Connector({ id: 'c2', from: 'api', to: 'user-svc', lineShape: 'rightAngle' }),
+    Connector({ id: 'c3', from: 'api', to: 'order-svc', lineShape: 'rightAngle' }),
+    Connector({ id: 'c4', from: 'api', to: 'pay-svc', lineShape: 'rightAngle' }),
+    Connector({ id: 'c5', from: 'user-svc', to: 'pg', variant: 'main', lineShape: 'rightAngle' }),
+    Connector({ id: 'c6', from: 'order-svc', to: 'redis', variant: 'async', label: 'cache', lineShape: 'rightAngle' }),
   ],
 });
 

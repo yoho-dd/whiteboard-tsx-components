@@ -412,6 +412,8 @@ export interface PipelineProps {
   direction?: 'horizontal' | 'vertical';
   /** Connector variant between steps */
   connectorVariant?: ConnectorVariant;
+  /** Line shape for connectors */
+  lineShape?: 'straight' | 'curve' | 'rightAngle' | 'polyline';
   /** Gap between steps */
   gap?: number;
   colorGroup?: ColorGroupName;

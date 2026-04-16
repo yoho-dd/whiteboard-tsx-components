@@ -100,8 +100,8 @@ const story: PlaybookStory = {
             },
           ],
           connectors: [
-            { id: 'swimlane-conn-1', from: 'user-apply', to: 'ops-review', endArrow: 'arrow', variant: 'main' },
-            { id: 'swimlane-conn-2', from: 'ops-review', to: 'system-refund', endArrow: 'arrow', variant: 'main', label: '审核通过' },
+            { id: 'swimlane-conn-1', from: 'user-apply', to: 'ops-review', endArrow: 'arrow', variant: 'main', lineShape: 'rightAngle' },
+            { id: 'swimlane-conn-2', from: 'ops-review', to: 'system-refund', endArrow: 'arrow', variant: 'main', label: '审核通过', lineShape: 'rightAngle' },
           ],
         }),
       ],

@@ -1238,6 +1238,7 @@ export function Pipeline(props: PipelineProps): WBNode {
     steps,
     direction = 'horizontal',
     connectorVariant = 'main',
+    lineShape,
     gap = spacing.xl,
     colorGroup,
     width = direction === 'horizontal' ? ('fill-container' as any) : ('fit-content' as any),
@@ -1385,6 +1386,7 @@ export function Pipeline(props: PipelineProps): WBNode {
       connector: clean({
         from: steps[i].id,
         to: steps[i + 1].id,
+        lineShape,
         lineColor: theme.connector.color,
         lineWidth: defaults.lineWidth,
         lineStyle: defaults.lineStyle,

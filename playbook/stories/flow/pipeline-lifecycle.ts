@@ -39,6 +39,7 @@ const story: PlaybookStory = {
                   id: 'order-pipeline',
                   colorGroup: 'green',
                   connectorVariant: 'main',
+                  lineShape: 'rightAngle',
                   steps: [
                     {
                       id: 'validate',
